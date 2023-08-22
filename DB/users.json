@@ -1,0 +1,37 @@
+{
+    "users":[
+
+  {
+
+    "email": "oranbourak@gmail.com",
+
+    "password": "password123"
+
+  },
+
+  {
+
+    "email": "tomerburman@gmail.com",
+
+    "password": "password123"
+
+  },
+
+  {
+
+    "email": "vladsh123@gmail.com",
+
+    "password": "password123"
+
+  },
+
+  {
+
+    "email": "shilon199707@gmail.com",
+
+    "password": "password123"
+
+  }
+
+]
+}
