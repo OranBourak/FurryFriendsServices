@@ -32,6 +32,7 @@
     "nodemon": "^3.0.1"
   },
   "dependencies": {
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "Eslint": "npm:eslint@^8.47.0"
   }
 }
