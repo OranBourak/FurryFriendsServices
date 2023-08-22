@@ -30,9 +30,9 @@ We use ESLint with Google conventions for the backend. To check for linting erro
 npm run lint
 
 # Services Offered
-* Pet sitting- Trusted sitters to take care of your pets when you're away.
+* Pet sitting - Trusted sitters to take care of your pets when you're away.
 * Pet Grooming - to make your pet look beautiful !
-* Dog training: High level trainers offer services
+* Dog training - High level trainers offer services
 * Dog walking - Dog walkers would love to walk your dog
 * and many more services related to furry pets!
 
