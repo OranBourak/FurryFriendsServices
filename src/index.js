@@ -8,6 +8,12 @@ app.use(Express.json()); // Parse JSON request bodies
 app.use(Express.urlencoded({extended: true})); // Parse URL-encoded form data
 app.use(cors());
 
+/**
+ * checks if the user exists in the db
+ * @param {string} email - user's email.
+ * @param {string} password - user's password.
+ * @return {string} The name of the user.
+ */
 function checkLogin(email, password) {
     const rawData = fs.readFileSync("./DB/users.json");
 
@@ -33,7 +39,6 @@ app.post("/login", (req, res) => {
         } else {
             res.status(401).json({message: "Invalid credentials"});
         }
-      
     }
 });
 
