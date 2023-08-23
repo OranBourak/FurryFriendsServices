@@ -6,23 +6,26 @@ version: 2.1
 orbs:
   node: circleci/node@4.7
 
-jobs: 
-  cicd-job: 
-    executor: 
+jobs:
+  cicd-job:
+    executor:
       name: node/default
-    steps: 
+    steps:
       - checkout
-      - run: 
+      - run:
           name: install dependencies - NPM packages
           command: npm install
-      - run: 
+      - run:
           name: run tests
           command: npm run test
-      - run: 
+      - run:
           name: Run linter
           command: npm run lint
+      - run:
+          name: CD - Deploy the service
+          command: curl "https://api.render.com/deploy/srv-cjiun3gcfp5c73ba7ua0?key=uS8tjVI83P4"
 
-workflows: 
-  example-workflow: 
-    jobs: 
+workflows:
+  example-workflow:
+    jobs:
       - cicd-job
