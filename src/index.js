@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import Express from "express";
 import cors from "cors";
 import fs from "fs";
@@ -14,7 +15,7 @@ app.use(cors());
  * @param {string} password - user's password.
  * @return {string} The name of the user.
  */
-function checkLogin(email, password) {
+function getUser(email, password) {
     const rawData = fs.readFileSync("./DB/users.json");
 
     const data = JSON.parse(rawData);
@@ -22,20 +23,20 @@ function checkLogin(email, password) {
 
     for (const user of data) {
         if (user.email === email && user.password === password) {
-            return true;
+            return user.name;
         }
     }
-    return false;
+    return "";
 }
 
 
 app.post("/login", (req, res) => {
     const formData = req.body;
     console.log(formData);
-    const testLogin = checkLogin(formData.email, formData.password);
+    const user = getUser(formData.email, formData.password);
     {
-        if (testLogin) {
-            res.status(200).json({message: "Form submitted successfully"});
+        if (user) {
+            res.status(200).json({message: "Form submitted successfully", name: user});
         } else {
             res.status(401).json({message: "Invalid credentials"});
         }
