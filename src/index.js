@@ -1,12 +1,12 @@
 /* eslint-disable linebreak-style */
-import Express from "express";
+import express from "express";
 import cors from "cors";
 import fs from "fs";
 
 const port = process.env.PORT || 5000;
-const app = new Express();
-app.use(Express.json()); // Parse JSON request bodies
-app.use(Express.urlencoded({extended: true})); // Parse URL-encoded form data
+const app = express();
+app.use(express.json()); // Parse JSON request bodies
+app.use(express.urlencoded({extended: true})); // Parse URL-encoded form data
 app.use(cors());
 
 /**
@@ -40,6 +40,26 @@ app.post("/login", (req, res) => {
         } else {
             res.status(401).json({message: "Invalid credentials"});
         }
+    }
+});
+
+app.post("/signup", (req, res) => {
+    // the new user
+    const formData = req.body;
+    try {
+        // Read users list from the JSON file
+        const data = fs.readFileSync("./DB/users.json", "utf-8");
+        const arr = JSON.parse(data);
+
+        // Add the new user to the users list
+        arr.push(formData);
+
+        // Save the updated users list in the JSON file
+        fs.writeFileSync("./DB/users.json", JSON.stringify(arr, null, 2), "utf-8");
+        res.status(200).send("Registration succeeded");
+    } catch (err) {
+        console.error("An error occurred:", err);
+        res.status(500).send("An error occurred during registration.");
     }
 });
 
