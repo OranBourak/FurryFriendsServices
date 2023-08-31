@@ -1,7 +1,13 @@
-/* eslint-disable linebreak-style */
 import express from "express";
 import cors from "cors";
 import fs from "fs";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+
+// start .env file
+dotenv.config();
+
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -28,6 +34,19 @@ function getUser(email, password) {
     }
     return "";
 }
+
+// connect to the database
+
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => {
+        // listen for requests
+        app.listen(port, () => {
+            console.log("connected to db & listening on port", port);
+        });
+    })
+    .catch((error) => {
+        console.log(error);
+    });
 
 
 app.post("/login", (req, res) => {
@@ -61,10 +80,6 @@ app.post("/signup", (req, res) => {
         console.error("An error occurred:", err);
         res.status(500).send("An error occurred during registration.");
     }
-});
-
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
 });
 
 
