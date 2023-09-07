@@ -1,4 +1,0 @@
-@base = http://localhost:1337
-
-GET {{base}}/client/get
-Accept: application/json
