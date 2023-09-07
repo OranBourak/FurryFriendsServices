@@ -8,7 +8,7 @@ const Schema = mongoose.Schema;
 const ServiceProviderSchema = new Schema(
 	{
 		name: { type: String, required: [true, "No user name given!"] },
-		email: { type: String, unique: true, required: [true, "No email given!"] },
+		email: { type: String, unique: [true, "Email already exists"], required: [true, "No email given!"] },
 		password: { type: String, required: [true, "No password given!"] },
 		country: { type: String, default: "Israel" },
 		phone: {
@@ -35,7 +35,7 @@ const ServiceProviderSchema = new Schema(
 			required: [true, "No type of service given!"],
 		},
 		reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
-		averageRating: { type: Number },
+		averageRating: { type: Number, default: null},
 		blockedDates: [{ type: String }],
 		blockedTimeSlots: [{ type: Schema.Types.ObjectId, ref: "BlockedTimeSlot" }],
 		appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment" }],
