@@ -1,40 +1,44 @@
 {
-  "name": "furryfriendsservices_backend",
-  "version": "1.0.0",
-  "description": "Backend for the animal care project",
-  "main": "index.js",
+	"name": "furryfriendsservices_backend",
+	"version": "1.0.0",
+	"description": "Backend for the animal care project",
+	"main": "index.js",
   "type": "module",
-  "scripts": {
-    "test": "mocha test/*.spec.js --color",
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
-    "lint": "eslint src/* --fix"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/OranBourak/FurryFriendsServices_Backend.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/OranBourak/FurryFriendsServices_Backend/issues"
-  },
-  "homepage": "https://github.com/OranBourak/FurryFriendsServices_Backend#readme",
-  "devDependencies": {
-    "@types/chai": "^4.3.5",
-    "@types/mocha": "^10.0.1",
-    "chai": "^4.3.7",
-    "eslint": "^8.47.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-plugin-react": "^7.33.2",
-    "express": "^4.18.2",
-    "mocha": "^10.2.0",
-    "nodemon": "^3.0.1"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "Eslint": "npm:eslint@^8.47.0",
-    "mongoose": "^7.5.0"
-  }
+	"scripts": {
+		"test": "mocha test/*.spec.js --color",
+		"dev": "nodemon src/index.js",
+		"start": "node src/index.js",
+		"lint": "eslint src/*.js --fix"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/OranBourak/FurryFriendsServices_Backend.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/OranBourak/FurryFriendsServices_Backend/issues"
+	},
+	"homepage": "https://github.com/OranBourak/FurryFriendsServices_Backend#readme",
+	"devDependencies": {
+		"@types/chai": "^4.3.5",
+		"@types/mocha": "^10.0.1",
+		"chai": "^4.3.7",
+		"dotenv": "^16.3.1",
+		"eslint": "^8.47.0",
+		"eslint-config-google": "^0.14.0",
+		"eslint-plugin-react": "^7.33.2",
+		"express": "^4.18.2",
+		"mocha": "^10.2.0",
+		"nodemon": "^3.0.1"
+	},
+	"dependencies": {
+		"cors": "^2.8.5",
+		"Eslint": "npm:eslint@^8.47.0",
+		"mongoose": "^7.5.0"
+	},
+	"directories": {
+		"test": "test"
+	},
+	"keywords": []
 }
