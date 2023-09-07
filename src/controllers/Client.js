@@ -83,19 +83,28 @@ const deleteClient = async (req, res) => {
   }
 };
 
-// // Search Service Providers By Parameters
-// const searchProviders = async (req, res) => {
-//   const {typeOfService, city, min_price, max_price, rating} = req.body; 
-//   try {
-//     const providers = await ServiceProvider.find({typeOfService, city, averageRating});
+// Search Service Providers By Parameters
+const searchProviders = async (req, res) => {
+  const { typeOfService, city, min_price, max_price, averageRating } = req.query;
 
-//     return res.status(200).json({ providers });
-//   } catch (error) {
-//     return res.status(500).json({ error: error.message });
-//   }
-// };
+  const query = {
+    ...(typeOfService && { typeOfService }),
+    ...(city && { city }),
+    ...(averageRating && { averageRating: { $gte: averageRating } }),
+    ...(min_price || max_price) && { price: { 
+      ...(min_price && { $gte: min_price }),
+      ...(max_price && { $lte: max_price })
+    }}
+  };
 
-//{typeOfService: 'Grooming', city: 'North', min_price: '100', max_price: '1000', rating: 1}
+  try {
+    const providers = await ServiceProvider.find(query);
+    return res.status(200).json({ providers });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 
 
 
@@ -107,4 +116,5 @@ module.exports = {
   readAllClients,
   updateClient,
   deleteClient,
+  searchProviders,
 };
