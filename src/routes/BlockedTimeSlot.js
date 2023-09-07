@@ -10,4 +10,4 @@ router.get("/get/", controller.readAllBlockedTimeSlots);
 router.patch("/update/:blockedTimeSlotId", controller.updateBlockedTimeSlot);
 router.delete("/delete/:blockedTimeSlotId", controller.deleteBlockedTimeSlot);
 
-export default router;
+module.exports = router;

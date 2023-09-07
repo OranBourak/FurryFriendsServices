@@ -7,6 +7,7 @@
 /* eslint-disable quotes */
 const mongoose = require("mongoose");
 const Client = require("../models/Client");
+const ServiceProvider = require("../models/ServiceProvider");
 
 // GET CONTROLLERS
 const readClient = async (req, res) => {
@@ -81,6 +82,24 @@ const deleteClient = async (req, res) => {
     return res.status(500).json({ message: "Client not found" });
   }
 };
+
+// // Search Service Providers By Parameters
+// const searchProviders = async (req, res) => {
+//   const {typeOfService, city, min_price, max_price, rating} = req.body; 
+//   try {
+//     const providers = await ServiceProvider.find({typeOfService, city, averageRating});
+
+//     return res.status(200).json({ providers });
+//   } catch (error) {
+//     return res.status(500).json({ error: error.message });
+//   }
+// };
+
+//{typeOfService: 'Grooming', city: 'North', min_price: '100', max_price: '1000', rating: 1}
+
+
+
+
 
 module.exports = {
   createClient,

@@ -1,6 +1,7 @@
 /* eslint-disable object-curly-spacing */
 /* eslint-disable new-cap */
-const controller = require("../controllers/Appointment");
+const express = require("express");
+const controller = require("../controllers/Appointment.js");
 const router = express.Router();
 
 router.post("/create/", controller.createAppointment);
