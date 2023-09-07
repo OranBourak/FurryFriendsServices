@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "Backend for the animal care project",
 	"main": "index.js",
-  "type": "module",
+  	"type": "module",
 	"scripts": {
 		"test": "mocha test/*.spec.js --color",
 		"dev": "nodemon src/index.js",
