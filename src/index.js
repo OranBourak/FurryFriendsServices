@@ -8,11 +8,11 @@ const http = require("http");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-const serviceProviderRoutes = require("./models/ServiceProvider.js");
-const clientRoutes = require("./models/Client.js");
-const appointmentRoutes = require("./models/Appointment.js");
-const reviewRoutes = require("./models/Review.js");
-const blockedTimeSlotRoutes = require("./models/BlockedTimeSlot.js");
+const serviceProviderRoutes = require("./routes/ServiceProvider.js");
+const clientRoutes = require("./routes/Client.js");
+const appointmentRoutes = require("./routes/Appointment.js");
+const reviewRoutes = require("./routes/Review.js");
+const blockedTimeSlotRoutes = require("./routes/BlockedTimeSlot.js");
 const Logger = require("./lib/Logger.js");
 const config = require("./config/config.js");
 
