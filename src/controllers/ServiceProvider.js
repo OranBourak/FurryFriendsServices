@@ -1,11 +1,24 @@
 
 const mongoose = require("mongoose");
 const ServiceProvider = require("../models/ServiceProvider");
+const validator = require("validator");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+const encrypt = async (password) => {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+};
+
+const createToken = (_id) => {
+    return jwt.sign({_id}, process.env.SECRET, {expiresIn: "3d"});
+};
+
 
 // GET CONTROLLERS
 const readServiceProvider = async (req, res) => {
     const serviceProviderId = req.params.serviceProviderId;
-
     try {
         const serviceProvider = await ServiceProvider.findById(serviceProviderId);
         return serviceProvider ?
@@ -24,22 +37,52 @@ const readAllServiceProviders = async (_, res) => {
     }
 };
 
+// const loginServiceProvider = async (req, res) => {
+//     const provider = req.body;
+// };
+
 // POST CONTROLLERS
 const createServiceProvider = async (req, res) => {
-    const {provider} = req.body;
-    const serviceProvider = new ServiceProvider({
-        _id: new mongoose.Types.ObjectId(),
-        provider,
-    });
+    const provider = req.body;
 
     try {
-        await serviceProvider.save();
-        return res.status(201).json({serviceProvider});
+        // Validate email
+        if (!validator.isEmail(provider.email)) {
+            return res.status(400).json({message: "Bad email address"});
+        }
+
+        // Validate password
+        if (!validator.isStrongPassword(provider.password, {minLength: 12})) {
+            return res.status(400).json({message: "Password not strong enough"});
+        }
+
+        // Check if the email already exists
+        const existingServiceProvider = await ServiceProvider.findOne({email: provider.email});
+
+        if (existingServiceProvider) {
+            return res.status(400).json({message: "Email already in use"});
+        }
+
+        // Hash the password
+        const hashedPassword = await encrypt(provider.password);
+        provider.password = hashedPassword;
+
+        // Create the service provider
+        const serviceProvider = new ServiceProvider({
+            _id: new mongoose.Types.ObjectId(),
+            ...provider,
+        });
+
+        // Save the service provider
+        const user = await serviceProvider.save();
+        const token = createToken(user._id);
+        console.log(token);
+        return res.status(201).json({name: user.name, token});
     } catch (error) {
-        return res.status(500).json({error});
+        // Handle any errors that occur and return an error response
+        return res.status(500).json({message: error.message});
     }
 };
-
 // PATCH CONTROLLERS
 const updateServiceProvider = async (req, res) => {
     const serviceProviderId = req.params.serviceProviderId;
