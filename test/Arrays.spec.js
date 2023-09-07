@@ -1,4 +1,5 @@
-import {expect} from "chai";
+// import {expect} from "chai";
+const expect = require("chai");
 
 describe("Arrays", () => {
     describe("#sort", () => {
