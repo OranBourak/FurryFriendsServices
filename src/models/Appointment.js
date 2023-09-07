@@ -24,7 +24,8 @@ const AppointmentSchema = new Schema(
 			required: [true, "No status given to appointment!"],
 		},
 		appointmentType: {
-			type: String,
+			type: mongoose.Types.ObjectId,
+			ref: "AppointmentType",
 			required: [true, "No appointment type given to set the appointment!"],
 		},
 		date: { type: Date },
@@ -36,14 +37,5 @@ const AppointmentSchema = new Schema(
 	{ versionKey: false, timestamps: true },
 );
 
-const AppointmentTypeSchema = new Schema({
-	name: { type: String, required: [true, "No appointment type name given!"] },
-	price: { type: Number, required: [true, "No appointment type price given!"] },
-	duration: {
-		type: Number,
-		required: [true, "No appointment type duration given!"],
-	},
-});
 
 module.exports = mongoose.model("Appointment", AppointmentSchema);
-module.exports = mongoose.model("AppointmentType", AppointmentTypeSchema);

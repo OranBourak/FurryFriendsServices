@@ -1,8 +1,7 @@
-/* eslint-disable new-cap */
 const express = require("express");
 const controller = require("../controllers/ServiceProvider");
 
-const router = express.Router();
+const router = new express.Router();
 
 router.post("/create/", controller.createServiceProvider);
 router.get("/get/:serviceProviderId", controller.readServiceProvider);

@@ -1,8 +1,7 @@
-/* eslint-disable new-cap */
 const express = require("express");
 const controller = require("../controllers/Review");
 
-const router = express.Router();
+const router = new express.Router();
 
 router.post("/create/", controller.createReview);
 router.get("/get/:reviewId", controller.readReview);
