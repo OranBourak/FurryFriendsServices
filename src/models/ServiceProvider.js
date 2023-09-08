@@ -39,7 +39,8 @@ const ServiceProviderSchema = new Schema(
 		blockedDates: [{ type: String }],
 		blockedTimeSlots: [{ type: Schema.Types.ObjectId, ref: "BlockedTimeSlot" }],
 		appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment" }],
-		appointmentTypes: [{ type: Schema.Types.ObjectId, ref: "AppointmentType" }],
+		appointmentTypes: [{ type: Schema.Types.ObjectId, ref: "AppointmentType", default: [] }],
+
 
 	},
 	{ versionKey: false, timestamps: true },
