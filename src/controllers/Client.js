@@ -8,6 +8,7 @@
 const mongoose = require("mongoose");
 const Client = require("../models/Client");
 const ServiceProvider = require("../models/ServiceProvider");
+const AppointmentType = require("../models/AppointmentType");
 
 // GET CONTROLLERS
 const readClient = async (req, res) => {
@@ -85,29 +86,72 @@ const deleteClient = async (req, res) => {
 
 // Search Service Providers By Parameters
 const searchProviders = async (req, res) => {
-  const { typeOfService, city, min_price, max_price, averageRating } = req.query;
+  // Destructure query parameters from the request
+  const { typeOfService, city, minPrice, maxPrice, averageRating } = req.query;
 
+  // Build the MongoDB query object based on the provided query parameters
   const query = {
     ...(typeOfService && { typeOfService }),
     ...(city && { city }),
     ...(averageRating && { averageRating: { $gte: averageRating } }),
-    ...(min_price || max_price) && { price: { 
-      ...(min_price && { $gte: min_price }),
-      ...(max_price && { $lte: max_price })
-    }}
   };
 
   try {
-    const providers = await ServiceProvider.find(query);
-    return res.status(200).json({ providers });
+    // Fetch providers from the database that match the query
+    let providers = await ServiceProvider.find(query)
+      .select("name image _id averageRating appointmentTypes typeOfService")
+      .populate("appointmentTypes");
+
+    // Filter providers based on minPrice and maxPrice if provided
+    if (minPrice || maxPrice) {
+      providers = providers.filter((provider) => {
+        const appointmentTypes = provider.appointmentTypes;
+        if (!appointmentTypes || appointmentTypes.length === 0) return false;
+
+        let validForMinPrice = !minPrice;
+        let validForMaxPrice = !maxPrice;
+
+        // Check if the provider's appointment types meet the price criteria
+        for (const type of appointmentTypes) {
+          if (minPrice && type.price >= minPrice) validForMinPrice = true;
+          if (maxPrice && type.price <= maxPrice) validForMaxPrice = true;
+        }
+
+        return validForMinPrice && validForMaxPrice;
+      });
+    }
+
+    // Map providers to include min and max price ranges
+    const providersWithPriceRange = providers.map((provider) => {
+      const appointmentTypes = provider.appointmentTypes;
+      let minPrice = 0;
+      let maxPrice = 0;
+
+      // Calculate min and max price for each provider based on their appointment types
+      if (appointmentTypes && appointmentTypes.length > 0) {
+        minPrice = Math.min(...appointmentTypes.map((type) => type.price));
+        maxPrice = Math.max(...appointmentTypes.map((type) => type.price));
+      }
+
+      return {
+        _id: provider._id,
+        name: provider.name,
+        image: provider.image,
+        averageRating: provider.averageRating,
+        typeOfService: provider.typeOfService,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+      };
+    });
+
+    // Send the filtered and mapped providers as a JSON response
+    return res.status(200).json({ providers: providersWithPriceRange });
   } catch (error) {
+    // Log the error and send a 500 Internal Server Error response
+    console.error("Error:", error);
     return res.status(500).json({ error: error.message });
   }
 };
-
-
-
-
 
 
 module.exports = {
