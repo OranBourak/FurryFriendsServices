@@ -35,7 +35,7 @@ const ServiceProviderSchema = new Schema(
 			enum: ["Dog Walker", "Veterinarian", "Dog Groomer"],
 			required: [true, "No type of service given!"],
 		},
-		reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
+		reviews: [{ type: Schema.Types.ObjectId, ref: "Review" ,default: []}],
 		averageRating: { type: Number, default: 0},
 		blockedDates: [{ type: String }],
 		blockedTimeSlots: [{ type: Schema.Types.ObjectId, ref: "BlockedTimeSlot" }],
