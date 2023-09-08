@@ -37,9 +37,9 @@ const ServiceProviderSchema = new Schema(
 		},
 		reviews: [{ type: Schema.Types.ObjectId, ref: "Review", default: []}],
 		averageRating: { type: Number, default: 0},
-		blockedDates: [{ type: String }],
-		blockedTimeSlots: [{ type: Schema.Types.ObjectId, ref: "BlockedTimeSlot" }],
-		appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment" }],
+		blockedDates: [{ type: String, default: []}],
+		blockedTimeSlots: [{ type: Schema.Types.ObjectId, ref: "BlockedTimeSlot", default: [] }],
+		appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment", default: []}],
 		appointmentTypes: [{ type: Schema.Types.ObjectId, ref: "AppointmentType", default: [] }],
 
 

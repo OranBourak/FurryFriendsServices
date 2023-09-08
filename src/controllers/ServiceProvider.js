@@ -55,7 +55,7 @@ const loginServiceProvider = async (req, res) => {
         }
         // password match, log in user
         const token = createToken(provider._id);
-        return res.status(200).json({token: token, name: provider.name});
+        return res.status(200).json({token: token, name: provider.name, email: email, id: provider._id});
     } catch (error) {
         return res.status(500).json({message: error.message});
     }
@@ -96,8 +96,7 @@ const createServiceProvider = async (req, res) => {
         // Save the service provider
         const user = await serviceProvider.save();
         const token = createToken(user._id);
-        console.log(token);
-        return res.status(201).json({name: user.name, email: user.email, token});
+        return res.status(201).json({name: user.name, email: user.email, token, id: user._id});
     } catch (error) {
         // Handle any errors that occur and return an error response
         return res.status(500).json({message: error.message});
