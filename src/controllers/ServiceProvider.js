@@ -37,9 +37,29 @@ const readAllServiceProviders = async (_, res) => {
     }
 };
 
-// const loginServiceProvider = async (req, res) => {
-//     const provider = req.body;
-// };
+const loginServiceProvider = async (req, res) => {
+    const {email, password} = req.body;
+    if (!email || !password) {
+        return res.status(400).json({message: "No email or passwrod found"});
+    }
+    // Check if service provider exists in DB
+    try {
+        const provider = await ServiceProvider.findOne({email});
+        if (!provider) {
+            return res.status(400).json({message: "Email or password are incorrect"});
+        }
+        // User found, check if passwrod match
+        const match = await bcrypt.compare(password, provider.password);
+        if (!match) {
+            return res.status(400).json({message: "Email or password are incorrect"});
+        }
+        // password match, log in user
+        const token = createToken(provider._id);
+        return res.status(200).json({token: token, name: provider.name});
+    } catch (error) {
+        return res.status(500).json({message: error.message});
+    }
+};
 
 // POST CONTROLLERS
 const createServiceProvider = async (req, res) => {
@@ -77,7 +97,7 @@ const createServiceProvider = async (req, res) => {
         const user = await serviceProvider.save();
         const token = createToken(user._id);
         console.log(token);
-        return res.status(201).json({name: user.name, token});
+        return res.status(201).json({name: user.name, email: user.email, token});
     } catch (error) {
         // Handle any errors that occur and return an error response
         return res.status(500).json({message: error.message});
@@ -125,4 +145,5 @@ module.exports = {
     readAllServiceProviders,
     updateServiceProvider,
     deleteServiceProvider,
+    loginServiceProvider,
 };
