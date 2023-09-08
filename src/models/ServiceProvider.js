@@ -11,7 +11,7 @@ const ServiceProviderSchema = new Schema(
 		email: { type: String, unique: [true, "Email already exists"], required: [true, "No email given!"] },
 		password: { type: String, required: [true, "No password given!"] },
 		country: { type: String, default: "Israel" },
-		image: { type: String, default: '../images/ServiceProvidersImages/default.jpg' },
+		image: { type: String, default: "../images/ServiceProvidersImages/default.jpg" },
 		phone: {
 			type: String,
 			maxLength: 10,
@@ -35,13 +35,13 @@ const ServiceProviderSchema = new Schema(
 			enum: ["Dog Walker", "Veterinarian", "Dog Groomer"],
 			required: [true, "No type of service given!"],
 		},
-		reviews: [{ type: Schema.Types.ObjectId, ref: "Review" ,default: []}],
+		reviews: [{ type: Schema.Types.ObjectId, ref: "Review", default: []}],
 		averageRating: { type: Number, default: 0},
 		blockedDates: [{ type: String }],
 		blockedTimeSlots: [{ type: Schema.Types.ObjectId, ref: "BlockedTimeSlot" }],
 		appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment" }],
 		appointmentTypes: [{ type: Schema.Types.ObjectId, ref: "AppointmentType", default: [] }],
-		
+
 
 	},
 	{ versionKey: false, timestamps: true },
