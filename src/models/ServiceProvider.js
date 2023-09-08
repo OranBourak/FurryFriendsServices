@@ -35,7 +35,7 @@ const ServiceProviderSchema = new Schema(
 			required: [true, "No type of service given!"],
 		},
 		reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
-		averageRating: { type: Number, default: null},
+		averageRating: { type: Number, default: 0},
 		blockedDates: [{ type: String }],
 		blockedTimeSlots: [{ type: Schema.Types.ObjectId, ref: "BlockedTimeSlot" }],
 		appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment" }],
