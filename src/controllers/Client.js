@@ -99,7 +99,7 @@ const searchProviders = async (req, res) => {
   try {
     // Fetch providers from the database that match the query
     let providers = await ServiceProvider.find(query)
-      .select("name image _id averageRating appointmentTypes typeOfService")
+      .select("name image _id averageRating appointmentTypes typeOfService city")
       .populate("appointmentTypes");
 
     // Filter providers based on minPrice and maxPrice if provided
@@ -139,6 +139,7 @@ const searchProviders = async (req, res) => {
         image: provider.image,
         averageRating: provider.averageRating,
         typeOfService: provider.typeOfService,
+        city: provider.city,
         minPrice: minPrice,
         maxPrice: maxPrice,
       };
