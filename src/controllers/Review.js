@@ -96,7 +96,7 @@ const getReviewsByProviderID = async (req, res) => {
       });
 
     // Transform reviews to include client name instead of client ID
-    const transformedReviews = reviews.map(review => {
+    const transformedReviews = reviews.map((review) => {
       return {
         serviceProvider_id: review.serviceProvider_id,
         clientName: review.client_id ? review.client_id.name : 'Unknown',
