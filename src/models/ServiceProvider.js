@@ -29,7 +29,7 @@ const ServiceProviderSchema = new Schema(
 			enum: ["Male", "Female", "Other"],
 			required: [true, "No gender given!"],
 		},
-		bio: { type: String },
+		bio: { type: String, default: ""},
 		typeOfService: {
 			type: String,
 			enum: ["Dog Walker", "Veterinarian", "Dog Groomer"],
