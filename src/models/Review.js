@@ -22,7 +22,7 @@ const ReviewSchema = new Schema(
 			max: 5,
 			required: [true, "No rating entered!"],
 		},
-		comment: { type: String },
+		comment: { type: String, default: "No comment entered!"},
 	},
 	{ versionKey: false, timestamps: true },
 );
