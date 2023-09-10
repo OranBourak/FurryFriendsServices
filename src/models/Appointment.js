@@ -9,7 +9,7 @@ const Schema = mongoose.Schema;
 const AppointmentSchema = new Schema(
 	{
 		client_id: {
-			type: Schema.Types.ObjectId,
+			type: Schema.Types.ObjectId, 
 			ref: "Client",
 			required: [true, "No clientId given to appointment!"],
 		},
@@ -21,6 +21,7 @@ const AppointmentSchema = new Schema(
 		status: {
 			type: String,
 			enum: ["Upcoming", "Completed", "Canceled"],
+			default: "Upcoming",
 			required: [true, "No status given to appointment!"],
 		},
 		appointmentType: {
