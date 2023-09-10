@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
 const Client = require("../models/Client");
 const ServiceProvider = require("../models/ServiceProvider");
 const AppointmentType = require("../models/AppointmentType");
-
+const jwt = require("jsonwebtoken");
 // GET CONTROLLERS
 // const readClient = async (req, res) => {
 //   const clientId = req.params.clientId;
@@ -83,6 +83,10 @@ const AppointmentType = require("../models/AppointmentType");
 //     return res.status(500).json({ message: "Client not found" });
 //   }
 // };
+
+const createToken = (_id) => {
+  return jwt.sign({_id},process.env.SECRET, {expiresIn: '1d'});
+}
 
 
 // get provider information by id
@@ -186,6 +190,49 @@ const searchProviders = async (req, res) => {
   }
 };
 
+/**
+ * uses static method of Client model to create a new client
+ * if successful returns response code 200, else returns response code 400.
+ * @param {*} req client signup form
+ * @param {*} res 
+ */
+const createClient = async (req, res) => {
+  const {name, email, password, secret_question, answer, phone_number} = req.body;
+  console.log(req.body);
+  try{
+    console.log(req.body);
+    const client = await Client.createClient(req.body);
+    // create a token for the client
+    const token = createToken(client._id);
+    console.log(email,token);
+    res.status(200).json({id:client._id, token:token});
+  }
+  catch(e){
+    console.log(e);
+    res.status(400).json({error: e.message});
+
+  }
+};
+
+const clientLogin = async (req, res) => {
+  const {email, password} = req.body;
+  console.log(email,password);
+  try{
+    console.log(req.body);
+    const client = await Client.login(email, password);
+
+    //create token
+    const token = createToken(client._id);
+    res.status(200).json({name: client.name, token: token, email: client.email, id: client._id});
+  }
+  catch(e){
+    res.status(400).json({error:e.message});
+    console.log(email, password);
+  }
+};
+
+
+
 
 // getProviderScheduleInfo returns the schedule information of a service provider
 const getProviderScheduleInfo = async (req, res) => {
@@ -231,7 +278,8 @@ const getProviderScheduleInfo = async (req, res) => {
 
 
 module.exports = {
-  // createClient,
+  clientLogin,
+  createClient,
   // readClient,
   // readAllClients,
   // updateClient,

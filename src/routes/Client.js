@@ -4,7 +4,8 @@ const controller = require("../controllers/Client");
 
 const router = express.Router();
 
-// router.post("/create/", controller.createClient);
+router.post("/createClient", controller.createClient);
+router.post("/login", controller.clientLogin);
 // router.get("/get/:clientId", controller.readClient);
 // router.get("/get/", controller.readAllClients);
 // router.patch("/update/:clientId", controller.updateClient);
