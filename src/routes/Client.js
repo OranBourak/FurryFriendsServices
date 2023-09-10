@@ -11,5 +11,6 @@ const router = express.Router();
 // router.delete("/delete/:clientId", controller.deleteClient);
 router.get("/searchProviders/", controller.searchProviders);
 router.get("/getProviderInfo/", controller.getProviderInfo);
+router.get("/serviceProviderSchedule/:providerID", controller.getProviderScheduleInfo);
 
 module.exports = router;

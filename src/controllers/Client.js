@@ -188,6 +188,49 @@ const searchProviders = async (req, res) => {
 };
 
 
+// getProviderScheduleInfo returns the schedule information of a service provider
+const getProviderScheduleInfo = async (req, res) => {
+  try {
+    // Extract providerID from request parameters
+    const { providerID } = req.params;
+
+    // Query the database to find the service provider by their ID
+    // Select only specific fields and populate related documents
+    const provider = await ServiceProvider.findById(providerID)
+      .select('blockedDates blockedTimeSlots appointments appointmentTypes')
+      // Populate blockedTimeSlots related to the service provider
+      .populate('blockedTimeSlots')
+      // Populate appointments related to the service provider
+      // Filter only "Upcoming" appointments and select only "date" and "duration" fields
+      .populate({
+        path: 'appointments',
+        match: { status: 'Upcoming' }, // Filter to include only "Upcoming" appointments
+        select: 'date duration' // Select only the "date" and "duration" fields
+      })
+      // Populate appointmentTypes related to the service provider
+      .populate('appointmentTypes');
+
+    // If the provider is not found, return a 404 status with a message
+    if (!provider) {
+      return res.status(404).json({ message: 'Provider not found' });
+    }
+
+    // Destructure the relevant fields from the provider document
+    const { blockedDates, blockedTimeSlots, appointments, appointmentTypes,} = provider;
+    console.log(provider);
+
+    // Send the response as a JSON object
+    res.status(200).json({blockedDates,blockedTimeSlots, appointments, appointmentTypes,});
+
+  } catch (error) { // Catch any errors
+    console.error(error); // Log the error to the console
+    res.status(500).json({ message: 'Server Error' }); // Send a 500 status with a message
+  }
+};
+
+
+
+
 module.exports = {
   // createClient,
   // readClient,
@@ -196,4 +239,5 @@ module.exports = {
   // deleteClient,
   searchProviders,
   getProviderInfo,
+  getProviderScheduleInfo,
 };
