@@ -11,7 +11,7 @@ const ServiceProviderSchema = new Schema(
 		email: { type: String, unique: [true, "Email already exists"], required: [true, "No email given!"] },
 		password: { type: String, required: [true, "No password given!"] },
 		country: { type: String, default: "Israel" },
-		image: { type: String, default: "../images/ServiceProvidersImages/default.jpg" },
+		image: { type: String, default: "../images/ServiceProviderImages/default.jpg"},
 		phone: {
 			type: String,
 			maxLength: 10,
@@ -29,7 +29,7 @@ const ServiceProviderSchema = new Schema(
 			enum: ["Male", "Female", "Other"],
 			required: [true, "No gender given!"],
 		},
-		bio: { type: String },
+		bio: { type: String, default: ""},
 		typeOfService: {
 			type: String,
 			enum: ["Dog Walker", "Veterinarian", "Dog Groomer"],

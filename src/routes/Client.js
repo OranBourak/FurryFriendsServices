@@ -12,5 +12,6 @@ router.post("/login", controller.clientLogin);
 // router.delete("/delete/:clientId", controller.deleteClient);
 router.get("/searchProviders/", controller.searchProviders);
 router.get("/getProviderInfo/", controller.getProviderInfo);
+router.get("/serviceProviderSchedule/:providerID", controller.getProviderScheduleInfo);
 
 module.exports = router;

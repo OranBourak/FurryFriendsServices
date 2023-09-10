@@ -5,6 +5,27 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+
+const requireAuth = async (req, res, next) => {
+    // verify user is authenticated
+    const {authorization} = req.headers;
+    if (!authorization) {
+        return res.status(401).json({error: "Authorization token required"});
+    }
+
+    const token = authorization.split(" ")[1];
+
+    try {
+        const {_id} = jwt.verify(token, process.env.SECRET);
+
+        req.user = await ServiceProvider.findOne({_id}).select("_id");
+        next();
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({error: "Request is not authorized"});
+    }
+};
+
 const encrypt = async (password) => {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
@@ -18,6 +39,7 @@ const createToken = (_id) => {
 
 // GET CONTROLLERS
 const readServiceProvider = async (req, res) => {
+    console.log("readServiceProvider");
     const serviceProviderId = req.params.serviceProviderId;
     try {
         const serviceProvider = await ServiceProvider.findById(serviceProviderId);
@@ -57,6 +79,26 @@ const loginServiceProvider = async (req, res) => {
         const token = createToken(provider._id);
         return res.status(200).json({token: token, name: provider.name, email: email, id: provider._id});
     } catch (error) {
+        return res.status(500).json({message: error.message});
+    }
+};
+
+const getSecurityInfo = async (req, res) => {
+    console.log("In getSecurityInfo");
+    const {email} = req.body; // Check if service provider exists in DB
+    if (!email) {
+        console.log("no email found");
+        return res.status(400).json({message: "No email found"});
+    }
+    try {
+        const provider = await ServiceProvider.findOne({email});
+        if (!provider) {
+            console.log("Email doesnt exist");
+            return res.status(400).json({message: "Email doesn't exist"});
+        }
+        return res.status(200).json({securityQuestion: provider.question, securityAnswer: provider.answer, id: provider._id});
+    } catch (error) {
+        console.log("catched error");
         return res.status(500).json({message: error.message});
     }
 };
@@ -145,4 +187,6 @@ module.exports = {
     updateServiceProvider,
     deleteServiceProvider,
     loginServiceProvider,
+    requireAuth,
+    getSecurityInfo,
 };

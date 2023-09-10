@@ -21,6 +21,7 @@ const AppointmentSchema = new Schema(
 		status: {
 			type: String,
 			enum: ["Upcoming", "Completed", "Canceled"],
+			default: "Upcoming",
 			required: [true, "No status given to appointment!"],
 		},
 		appointmentType: {
