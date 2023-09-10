@@ -85,7 +85,6 @@ const AppointmentType = require("../models/AppointmentType");
 // };
 
 
-
 // get provider information by id
 const getProviderInfo = async (req, res) => {
   // Extract providerId from query parameters
