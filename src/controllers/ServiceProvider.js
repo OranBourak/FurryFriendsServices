@@ -39,7 +39,6 @@ const createToken = (_id) => {
 
 // GET CONTROLLERS
 const readServiceProvider = async (req, res) => {
-    console.log("readServiceProvider");
     const serviceProviderId = req.params.serviceProviderId;
     try {
         const serviceProvider = await ServiceProvider.findById(serviceProviderId);
@@ -50,6 +49,23 @@ const readServiceProvider = async (req, res) => {
         return res.status(500).json({error});
     }
 };
+
+const getAppointments = async (req, res) => {
+    const serviceProviderId = req.params.serviceProviderId;
+    try {
+        const serviceProvider = await ServiceProvider.findById(serviceProviderId)
+            .populate("appointments"); // Populate the 'appointments' field
+        if (!serviceProvider) {
+            return res.status(404).json({message: "Service Provider wasn't found"});
+        }
+        // Access the populated 'appointments' field
+        const appointments = serviceProvider.appointments;
+        return res.status(200).json({appointments});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 const readAllServiceProviders = async (_, res) => {
     try {
         const serviceProviders = await ServiceProvider.find({});
@@ -189,4 +205,5 @@ module.exports = {
     loginServiceProvider,
     requireAuth,
     getSecurityInfo,
+    getAppointments,
 };
