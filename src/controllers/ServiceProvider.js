@@ -83,9 +83,34 @@ const loginServiceProvider = async (req, res) => {
     }
 };
 
+const updatePassword = async (req, res) => {
+    const {id, password} = req.body;
+    try {
+        const provider = await ServiceProvider.findOne({_id: id});
+        if (provider) {
+            // Check password strength after finding the provider
+            if (!validator.isStrongPassword(password, {minLength: 12})) {
+                return res.status(400).json({message: "Password not strong enough"});
+            }
+
+            try {
+                const hashedPassword = await encrypt(password);
+                provider.set({password: hashedPassword});
+                await provider.save();
+                return res.status(201).json({provider});
+            } catch (error) {
+                res.status(500).json({error});
+            }
+        } else {
+            res.status(404).json({message: "Service provider not found"});
+        }
+    } catch (error) {
+        res.status(500).json({error});
+    }
+};
 const getSecurityInfo = async (req, res) => {
     console.log("In getSecurityInfo");
-    const {email} = req.body; // Check if service provider exists in DB
+    const email = req.query.email; // Access email as a query parameter
     if (!email) {
         console.log("no email found");
         return res.status(400).json({message: "No email found"});
@@ -189,4 +214,5 @@ module.exports = {
     loginServiceProvider,
     requireAuth,
     getSecurityInfo,
+    updatePassword,
 };

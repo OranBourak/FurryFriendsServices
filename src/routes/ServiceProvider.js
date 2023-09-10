@@ -10,4 +10,5 @@ router.get("/get/:serviceProviderId", controller.requireAuth, controller.readSer
 router.get("/get/", controller.readAllServiceProviders);
 router.patch("/update/:serviceProviderId", controller.requireAuth, controller.updateServiceProvider);
 router.delete("/delete/:serviceProviderId", controller.deleteServiceProvider);
+router.patch("/password-change", controller.updatePassword);
 module.exports = router;
