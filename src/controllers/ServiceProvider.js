@@ -54,7 +54,13 @@ const getAppointments = async (req, res) => {
     const serviceProviderId = req.params.serviceProviderId;
     try {
         const serviceProvider = await ServiceProvider.findById(serviceProviderId)
-            .populate("appointments"); // Populate the 'appointments' field
+            .populate({
+                path: "appointments",
+                populate: [
+                    {path: "appointmentType"}, // Populate the 'appointmentType' field within 'appointments'
+                    {path: "client_id"}, // Populate the 'client_id' field within 'appointments'
+                ],
+            });
         if (!serviceProvider) {
             return res.status(404).json({message: "Service Provider wasn't found"});
         }
