@@ -83,14 +83,15 @@ ClientSchema.statics.login = async function login(email, password) {
 ClientSchema.statics.changeName = async function changeName(id,name) {
 	if (/^[A-Za-z]+([ ][A-Za-z]+)*$/.test(name)) {
 		await this.updateOne({_id: id},{name: name});
-		return true;
+		return "Name has been updated successfully.";
 	}
 	return false;
 };
 
 ClientSchema.statics.changePhone = async function changePhone(id,phone) {
-	this.updateOne({_id: id},{phone: phone});
-	return true;
+	await this.updateOne({_id: id},{phone: phone});
+	console.log(phone);
+	return "Phone has been updated successfully.";
 };
 
 
