@@ -8,12 +8,12 @@ const Schema = mongoose.Schema;
 
 const AppointmentSchema = new Schema(
 	{
-		client_id: {
+		clientId: {
 			type: Schema.Types.ObjectId,
 			ref: "Client",
 			required: [true, "No clientId given to appointment!"],
 		},
-		serviceProvider_id: {
+		serviceProviderId: {
 			type: Schema.Types.ObjectId,
 			ref: "ServiceProvider",
 			required: [true, "No serviceProviderId given to appointment!"],

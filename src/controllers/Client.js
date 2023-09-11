@@ -198,15 +198,13 @@ const searchProviders = async (req, res) => {
  */
 const createClient = async (req, res) => {
   try {
-    console.log(req.body);
     const client = await Client.createClient(req.body);
     // create a token for the client
     const token = createToken(client._id);
-    console.log(email, token);
-    res.status(200).json({id: client._id, token: token});
+    return res.status(200).json({id: client._id, token: token});
   } catch (e) {
-    console.log(e);
-    res.status(400).json({error: e.message});
+    console.log(e, " This is the error");
+    return res.status(400).json({error: e.message});
   }
 };
 
@@ -225,9 +223,9 @@ const clientLogin = async (req, res) => {
 
     // create token
     const token = createToken(client._id);
-    res.status(200).json({name: client.name, token: token, email: client.email, id: client._id});
+    return res.status(200).json({name: client.name, token: token, email: client.email, id: client._id});
   } catch (e) {
-    res.status(400).json({error: e.message});
+    return res.status(400).json({error: e.message});
   }
 };
 
@@ -241,9 +239,9 @@ const updateClient = async (req, res) => {
   } else if (name) {
     await Client.changeName(id, name);
   }
-  res.status(200).json({id: id, name: name, phone: phone});
+  return res.status(200).json({id: id, name: name, phone: phone});
 } catch (e) {
-  res.status(400).json({error: e.message});
+  return res.status(400).json({error: e.message});
 }
   };
 
