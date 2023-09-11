@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const AppointmentType = require("../models/AppointmentType");
+const ServiceProvider = require("../models/ServiceProvider");
 
 const requireAuth = async (req, res, next) => {
     // verify user is authenticated
@@ -45,16 +46,44 @@ const readAllAppointmentTypes = async (_, res) => {
 
 // POST CONTROLLERS
 const createAppointmentType = async (req, res) => {
+    const serviceProviderId = req.params.serviceProviderId;
     const {data} = req.body;
-    const appointmentType = new AppointmentType({
-        _id: new mongoose.Types.ObjectId(),
-        data,
-    });
+    // Start a new transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
-        await appointmentType.save();
+        // Create new appointemnt
+        const appointmentType = new AppointmentType({
+            _id: new mongoose.Types.ObjectId(),
+            data,
+        });
+        const newAppointmentType = await appointmentType.save();
+        // Store its ID
+        const appointmentTypeId = newAppointmentType._id;
+
+        // Find the ServiceProvider you want to update
+        const serviceProvider = await ServiceProvider.findById(serviceProviderId);
+
+        if (!serviceProvider) {
+            throw new Error("ServiceProvider not found");
+        }
+
+        // Add the appointmentTypeId to the appointmentTypes array
+        serviceProvider.appointmentTypes.push(appointmentTypeId);
+
+        // Save the updated ServiceProvider document
+        await serviceProvider.save();
+
+        // Commit the transaction
+        await session.commitTransaction();
+        session.endSession();
+        // On transaction success
         return res.status(201).json({appointmentType});
     } catch (error) {
+        // If any step fails, roll back the transaction
+        await session.abortTransaction();
+        session.endSession();
         return res.status(500).json({error});
     }
 };
