@@ -214,6 +214,12 @@ const createClient = async (req, res) => {
   }
 };
 
+/**
+ * uses the login static function of the model, if it returns a client instance a token is created and it returns a response code 200 with 
+ * name, token, email and client id. else it returns status code 400 with the corresponding error message.
+ * @param {*} req 
+ * @param {*} res 
+ */
 const clientLogin = async (req, res) => {
   const {email, password} = req.body;
   console.log(email,password);
@@ -227,10 +233,25 @@ const clientLogin = async (req, res) => {
   }
   catch(e){
     res.status(400).json({error:e.message});
-    console.log(email, password);
   }
 };
 
+const updateClient = async (req, res) => {
+  const {id, name, phone} = req.body;
+  console.log(req.body);
+  console.log(name,phone);
+  try{
+  if(phone) {
+    await Client.changePhone(id, phone);
+  } else if(name){
+    await Client.changeName(id, name);
+  }
+  res.status(200).json({id: id, name: name, phone: phone});
+}
+catch(e){
+  res.status(400).json({error: e.message});
+}
+  }
 
 
 
@@ -274,15 +295,26 @@ const getProviderScheduleInfo = async (req, res) => {
   }
 };
 
+const readClient = async (req, res) => {
+  const clientId = req.params.clientId;
+  console.log(req.params, clientId);
+  try{
+  const client = await Client.findOne({_id: clientId});
+  console.log(client);
+  return client? res.status(200).json({client: client}):res.status(404).json({err: 'Client not found'});
+  }catch(e){
+    return res.status(500).json({ message: e.message }); // response code 500 containing the error message.
+  }
+}
 
 
 
 module.exports = {
   clientLogin,
   createClient,
-  // readClient,
+  readClient,
   // readAllClients,
-  // updateClient,
+  updateClient,
   // deleteClient,
   searchProviders,
   getProviderInfo,

@@ -5,6 +5,7 @@
 /* eslint-disable indent */
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const validator = require("validator");
 const Schema = mongoose.Schema;
 
 const ClientSchema = new Schema(
@@ -79,5 +80,22 @@ ClientSchema.statics.login = async function login(email, password){
 
 	return client;
 }
+
+ClientSchema.statics.changeName = async function changeName(id,name){
+	if(/^[A-Za-z]+([ ][A-Za-z]+)*$/.test(name)){
+		await this.updateOne({_id: id},{name: name});
+		return true;
+	}
+	return false;
+
+}
+
+ClientSchema.statics.changePhone = async function changePhone(id,phone){
+	this.updateOne({_id: id},{phone: phone});
+	return true;
+	
+}
+
+	
 
 module.exports = mongoose.model("Client", ClientSchema);
