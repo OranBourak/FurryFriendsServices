@@ -23,7 +23,7 @@ const ClientSchema = new Schema(
 			required: [true, "No security question provided!"],
 		},
 		answer: { type: String, required: [true, "No security answer provided!"] },
-		appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment" }],
+		appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment", default: []}],
 	},
 	{ versionKey: false, timestamps: true },
 );

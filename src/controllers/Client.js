@@ -219,15 +219,12 @@ const getProviderScheduleInfo = async (req, res) => {
     console.log(provider);
 
     // Send the response as a JSON object
-    res.status(200).json({blockedDates,blockedTimeSlots, appointments, appointmentTypes,});
-
+    res.status(200).json({blockedDates, blockedTimeSlots, appointments, appointmentTypes,});
   } catch (error) { // Catch any errors
     console.error(error); // Log the error to the console
     res.status(500).json({ message: 'Server Error' }); // Send a 500 status with a message
   }
 };
-
-
 
 
 module.exports = {
