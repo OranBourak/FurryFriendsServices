@@ -119,15 +119,45 @@ const updateAppointmentType = async (req, res) => {
 
 // DELETE CONTROLLERS
 const deleteAppointmentType = async (req, res) => {
-    const appointmentTypeId = req.params.appointmentTypeId;
+    const {appointmentTypeId} = req.params;
+    const {serviceProviderId} = req.body;
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
-        await AppointmentType.findByIdAndDelete(appointmentTypeId);
+        const appointmentTypeToDelete = await AppointmentType.findByIdAndDelete(appointmentTypeId); // find and delete appointmentType from the appointment type collection
+        const serviceProvider = await ServiceProvider.findById(serviceProviderId); // find the service provider
+        if (!serviceProvider) {
+            throw new Error("ServiceProvider not found");
+        }
+        serviceProvider.appointmentTypes = serviceProvider.appointmentTypes.filter(
+            (appointmentType) => appointmentType._id !== appointmentTypeToDelete._id,
+        );
+        await serviceProvider.save(); // Save the serviceProvider after modifying appointmentTypes
+
+        await session.commitTransaction();
+        session.endSession();
         return res.status(201).json({
             message: appointmentTypeId + "Deleted from database!",
         });
     } catch (error) {
-        return res.status(500).json({message: "Appointment not found"});
+        await session.abortTransaction();
+        session.endSession();
+
+        if (error.name === "CastError") {
+            // Handle invalid ObjectId error (e.g., appointmentTypeId or serviceProviderId is invalid)
+            return res.status(400).json({message: "Invalid ID"});
+        } else if (error.message === "ServiceProvider not found") {
+            // Handle the case where the ServiceProvider is not found
+            return res.status(404).json({message: "ServiceProvider not found"});
+        } else if (error.name === "ValidationError") {
+            // Handle Mongoose validation errors if any
+            return res.status(400).json({message: error.message});
+        } else {
+            // Handle other unexpected errors with a 500 status code
+            console.error(error);
+            return res.status(500).json({message: "Internal Server Error"});
+        }
     }
 };
 
