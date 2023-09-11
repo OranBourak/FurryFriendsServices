@@ -4,9 +4,9 @@ const controller = require("../controllers/Client");
 
 const router = express.Router();
 
-router.post("/createClient", controller.createClient);
-router.post("/login", controller.clientLogin);
-router.get("/get/:clientId", controller.readClient);
+router.post("/createClient", controller.createClient); // create client
+router.post("/login", controller.clientLogin); // login client 
+router.get("/get/:clientId", controller.readClient); // get client details
 // router.get("/get/", controller.readAllClients);
 router.patch("/update/:clientId", controller.updateClient);
 // router.delete("/delete/:clientId", controller.deleteClient);

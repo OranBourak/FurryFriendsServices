@@ -85,8 +85,8 @@ const jwt = require("jsonwebtoken");
 // };
 
 const createToken = (_id) => {
-  return jwt.sign({_id},process.env.SECRET, {expiresIn: '1d'});
-}
+  return jwt.sign({_id}, process.env.SECRET, {expiresIn: '1d'});
+};
 
 
 // get provider information by id
@@ -197,20 +197,16 @@ const searchProviders = async (req, res) => {
  * @param {*} res 
  */
 const createClient = async (req, res) => {
-  const {name, email, password, secret_question, answer, phone_number} = req.body;
-  console.log(req.body);
-  try{
+  try {
     console.log(req.body);
     const client = await Client.createClient(req.body);
     // create a token for the client
     const token = createToken(client._id);
-    console.log(email,token);
-    res.status(200).json({id:client._id, token:token});
-  }
-  catch(e){
+    console.log(email, token);
+    res.status(200).json({id: client._id, token: token});
+  } catch (e) {
     console.log(e);
     res.status(400).json({error: e.message});
-
   }
 };
 
@@ -222,37 +218,34 @@ const createClient = async (req, res) => {
  */
 const clientLogin = async (req, res) => {
   const {email, password} = req.body;
-  console.log(email,password);
-  try{
+  console.log(email, password);
+  try {
     console.log(req.body);
     const client = await Client.login(email, password);
 
-    //create token
+    // create token
     const token = createToken(client._id);
     res.status(200).json({name: client.name, token: token, email: client.email, id: client._id});
-  }
-  catch(e){
-    res.status(400).json({error:e.message});
+  } catch (e) {
+    res.status(400).json({error: e.message});
   }
 };
 
 const updateClient = async (req, res) => {
   const {id, name, phone} = req.body;
   console.log(req.body);
-  console.log(name,phone);
-  try{
-  if(phone) {
+  console.log(name, phone);
+  try {
+  if (phone) {
     await Client.changePhone(id, phone);
-  } else if(name){
+  } else if (name) {
     await Client.changeName(id, name);
   }
   res.status(200).json({id: id, name: name, phone: phone});
-}
-catch(e){
+} catch (e) {
   res.status(400).json({error: e.message});
 }
-  }
-
+  };
 
 
 // getProviderScheduleInfo returns the schedule information of a service provider
@@ -287,8 +280,7 @@ const getProviderScheduleInfo = async (req, res) => {
     console.log(provider);
 
     // Send the response as a JSON object
-    res.status(200).json({blockedDates,blockedTimeSlots, appointments, appointmentTypes,});
-
+    res.status(200).json({blockedDates, blockedTimeSlots, appointments, appointmentTypes,});
   } catch (error) { // Catch any errors
     console.error(error); // Log the error to the console
     res.status(500).json({ message: 'Server Error' }); // Send a 500 status with a message
@@ -298,15 +290,14 @@ const getProviderScheduleInfo = async (req, res) => {
 const readClient = async (req, res) => {
   const clientId = req.params.clientId;
   console.log(req.params, clientId);
-  try{
+  try {
   const client = await Client.findOne({_id: clientId});
   console.log(client);
   return client? res.status(200).json({client: client}):res.status(404).json({err: 'Client not found'});
-  }catch(e){
+  } catch (e) {
     return res.status(500).json({ message: e.message }); // response code 500 containing the error message.
   }
-}
-
+};
 
 
 module.exports = {
