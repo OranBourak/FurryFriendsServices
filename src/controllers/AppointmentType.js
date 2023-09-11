@@ -130,10 +130,15 @@ const deleteAppointmentType = async (req, res) => {
         if (!serviceProvider) {
             throw new Error("ServiceProvider not found");
         }
-        serviceProvider.appointmentTypes = serviceProvider.appointmentTypes.filter(
-            (appointmentType) => appointmentType._id !== appointmentTypeToDelete._id,
+        const updatedAppointmentTypes = serviceProvider.appointmentTypes.filter(
+            (appointmentType) => !appointmentType._id.equals(appointmentTypeToDelete._id),
         );
-        await serviceProvider.save(); // Save the serviceProvider after modifying appointmentTypes
+        console.log(updatedAppointmentTypes);
+        // Update the serviceProvider document to remove the appointmentType
+        serviceProvider.appointmentTypes = updatedAppointmentTypes;
+
+        // Save the updated document to the database
+        await serviceProvider.save();
 
         await session.commitTransaction();
         session.endSession();
