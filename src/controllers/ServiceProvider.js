@@ -72,6 +72,23 @@ const getAppointments = async (req, res) => {
     }
 };
 
+const getAppointmentTypes = async (req, res) => {
+    const serviceProviderId = req.params.serviceProviderId;
+    try {
+        const serviceProvider = await ServiceProvider.findById(serviceProviderId)
+            .populate("appointmentTypes");
+        if (!serviceProvider) {
+            return res.status(404).json({message: "Service Provider wasn't found"});
+        }
+
+        // Access AppointmentTypes field
+        const appointmentTypes = serviceProvider.appointmentTypes;
+        return res.status(200).json({appointmentTypes});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 const readAllServiceProviders = async (_, res) => {
     try {
         const serviceProviders = await ServiceProvider.find({});
@@ -238,4 +255,5 @@ module.exports = {
     getSecurityInfo,
     getAppointments,
     updatePassword,
+    getAppointmentTypes,
 };
