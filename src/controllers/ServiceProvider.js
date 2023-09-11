@@ -58,7 +58,7 @@ const getAppointments = async (req, res) => {
                 path: "appointments",
                 populate: [
                     {path: "appointmentType"}, // Populate the 'appointmentType' field within 'appointments'
-                    {path: "client_id"}, // Populate the 'client_id' field within 'appointments'
+                    {path: "clientId"}, // Populate the 'clientId' field within 'appointments'
                 ],
             });
         if (!serviceProvider) {
