@@ -304,26 +304,28 @@ const readClient = async (req, res) => {
  * these appointment fields.
  * @param {*} req 
  * @param {*} res 
- * @return JSON object with appointments field that contains objects with fields of clientId, serviceProviderId, appointmentType and date.
+ * @return {JSON} JSON object with appointments field that contains objects with fields of clientId, serviceProviderId, appointmentType and date.
  */
 const getClientAppointments = async (req, res) => {
   const clientId = req.params.clientId;
-  try{
+  try {
     const client = await Client.findOne({_id: clientId});
     const {appointments} = await client.populate("appointments", "clientId serviceProviderId appointmentType date");
     // for(let i in appointments){
     //   const providerName = appointments[i].populate("serverProviderId", "name")
     // }
-    for(let i in appointments){
+    for (const i in appointments) {
+    if (appointments.hasOwnProperty(i)) {
     await appointments[i].populate("serviceProviderId", "name");
     await appointments[i].populate("clientId", "name");
     await appointments[i].populate("appointmentType", "name price duration");
     }
+    }
     return client? res.status(200).json({appointments: appointments}):res.status(404).json({err: 'Client not found'});
-  } catch(e) {
+  } catch (e) {
     return res.status(500).json({message: e.message});
   }
-}
+};
 
 module.exports = {
   clientLogin,
