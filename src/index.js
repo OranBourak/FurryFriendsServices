@@ -11,6 +11,7 @@ const mongoose = require("mongoose");
 const serviceProviderRoutes = require("./routes/ServiceProvider.js");
 const clientRoutes = require("./routes/Client.js");
 const appointmentRoutes = require("./routes/Appointment.js");
+const appointmentTypeRoutes = require("./routes/AppointmentType.js");
 const reviewRoutes = require("./routes/Review.js");
 const blockedTimeSlotRoutes = require("./routes/BlockedTimeSlot.js");
 const Logger = require("./lib/Logger.js");
@@ -74,6 +75,7 @@ const startServer = () => {
 	app.use("/client", clientRoutes);
 	app.use("/review", reviewRoutes);
 	app.use("/appointment", appointmentRoutes);
+	app.use("/appointmentType", appointmentTypeRoutes);
 	app.use("/blockedTimeSlot", blockedTimeSlotRoutes);
 
 	/** Healthcheck */
