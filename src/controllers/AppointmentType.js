@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
 const AppointmentType = require("../models/AppointmentType");
 const ServiceProvider = require("../models/ServiceProvider");
+const jwt = require("jsonwebtoken");
 
 const requireAuth = async (req, res, next) => {
     // verify user is authenticated
     const {authorization} = req.headers;
     if (!authorization) {
+        console.log("Authorization token required");
         return res.status(401).json({error: "Authorization token required"});
     }
 
@@ -47,17 +49,20 @@ const readAllAppointmentTypes = async (_, res) => {
 // POST CONTROLLERS
 const createAppointmentType = async (req, res) => {
     const serviceProviderId = req.params.serviceProviderId;
-    const {data} = req.body;
+    const {name, price, duration} = req.body;
+
     // Start a new transaction
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
         // Create new appointemnt
         const appointmentType = new AppointmentType({
             _id: new mongoose.Types.ObjectId(),
-            data,
+            name: name,
+            price: price,
+            duration: duration,
         });
+
         const newAppointmentType = await appointmentType.save();
         // Store its ID
         const appointmentTypeId = newAppointmentType._id;
@@ -74,7 +79,6 @@ const createAppointmentType = async (req, res) => {
 
         // Save the updated ServiceProvider document
         await serviceProvider.save();
-
         // Commit the transaction
         await session.commitTransaction();
         session.endSession();
