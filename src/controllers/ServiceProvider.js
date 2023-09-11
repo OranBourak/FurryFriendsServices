@@ -49,6 +49,46 @@ const readServiceProvider = async (req, res) => {
         return res.status(500).json({error});
     }
 };
+
+const getAppointments = async (req, res) => {
+    const serviceProviderId = req.params.serviceProviderId;
+    try {
+        const serviceProvider = await ServiceProvider.findById(serviceProviderId)
+            .populate({
+                path: "appointments",
+                populate: [
+                    {path: "appointmentType"}, // Populate the 'appointmentType' field within 'appointments'
+                    {path: "client_id"}, // Populate the 'client_id' field within 'appointments'
+                ],
+            });
+        if (!serviceProvider) {
+            return res.status(404).json({message: "Service Provider wasn't found"});
+        }
+        // Access the populated 'appointments' field
+        const appointments = serviceProvider.appointments;
+        return res.status(200).json({appointments});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
+const getAppointmentTypes = async (req, res) => {
+    const serviceProviderId = req.params.serviceProviderId;
+    try {
+        const serviceProvider = await ServiceProvider.findById(serviceProviderId)
+            .populate("appointmentTypes");
+        if (!serviceProvider) {
+            return res.status(404).json({message: "Service Provider wasn't found"});
+        }
+
+        // Access AppointmentTypes field
+        const appointmentTypes = serviceProvider.appointmentTypes;
+        return res.status(200).json({appointmentTypes});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 const readAllServiceProviders = async (_, res) => {
     try {
         const serviceProviders = await ServiceProvider.find({});
@@ -78,6 +118,51 @@ const loginServiceProvider = async (req, res) => {
         const token = createToken(provider._id);
         return res.status(200).json({token: token, name: provider.name, email: email, id: provider._id});
     } catch (error) {
+        return res.status(500).json({message: error.message});
+    }
+};
+
+const updatePassword = async (req, res) => {
+    const {id, password} = req.body;
+    try {
+        const provider = await ServiceProvider.findOne({_id: id});
+        if (provider) {
+            // Check password strength after finding the provider
+            if (!validator.isStrongPassword(password, {minLength: 12})) {
+                return res.status(400).json({message: "Password not strong enough"});
+            }
+
+            try {
+                const hashedPassword = await encrypt(password);
+                provider.set({password: hashedPassword});
+                await provider.save();
+                return res.status(201).json({provider});
+            } catch (error) {
+                res.status(500).json({error});
+            }
+        } else {
+            res.status(404).json({message: "Service provider not found"});
+        }
+    } catch (error) {
+        res.status(500).json({error});
+    }
+};
+const getSecurityInfo = async (req, res) => {
+    console.log("In getSecurityInfo");
+    const email = req.query.email; // Access email as a query parameter
+    if (!email) {
+        console.log("no email found");
+        return res.status(400).json({message: "No email found"});
+    }
+    try {
+        const provider = await ServiceProvider.findOne({email});
+        if (!provider) {
+            console.log("Email doesnt exist");
+            return res.status(400).json({message: "Email doesn't exist"});
+        }
+        return res.status(200).json({securityQuestion: provider.question, securityAnswer: provider.answer, id: provider._id});
+    } catch (error) {
+        console.log("catched error");
         return res.status(500).json({message: error.message});
     }
 };
@@ -167,4 +252,8 @@ module.exports = {
     deleteServiceProvider,
     loginServiceProvider,
     requireAuth,
+    getSecurityInfo,
+    getAppointments,
+    updatePassword,
+    getAppointmentTypes,
 };
