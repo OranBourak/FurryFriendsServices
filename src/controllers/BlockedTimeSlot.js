@@ -8,6 +8,9 @@
 /* eslint-disable quotes */
 const mongoose = require("mongoose");
 const BlockedTimeSlot = require("../models/BlockedTimeSlot");
+const { ServiceProvider } = require("./ServiceProvider");
+// const serviceProvider = require("../models/serviceProvider");
+
 
 // GET CONTROLLERS
 const readBlockedTimeSlot = async (req, res) => {
@@ -33,18 +36,57 @@ const readAllBlockedTimeSlots = async (_, res) => {
 
 // POST CONTROLLERS
 const createBlockedTimeSlot = async (req, res) => {
-	const { data } = req.body;
-	const blockedTimeSlot = new BlockedTimeSlot({
-		_id: new mongoose.Types.ObjectId(),
-		data,
-	});
+	const serviceProviderId = req.params.serviceProviderId;
 
+	const { date, blockedHours } = req.body;
+	console.log("date in backend: " + date);
+	console.log("blocked hours in backend: " + blockedHours);
+	// Start a new transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
 	try {
+		const serviceProvider = await ServiceProvider.findById(serviceProviderId);
+		if (!serviceProvider) {
+			console.log("didn;t find the service provider");
+			return res.status(404).json({ message: "Service Provider was not found" });
+		}
+		console.log("serviceProvider in back: " + serviceProvider);
+		// create a new BlockedTimeSlot object
+		const blockedTimeSlot = new BlockedTimeSlot({
+			_id: new mongoose.Types.ObjectId(),
+			date: date,
+			blockedHours: blockedHours,
+		});
 		await blockedTimeSlot.save();
-		return res.status(201).json({ blockedTimeSlot });
+
+		// Add the new object id to the service provider blockedTimeSlots array
+		serviceProvider.blockedTimeSlots.push(blockedTimeSlot._id);
+		await serviceProvider.save();
+
+		// Commit the transaction
+        await session.commitTransaction();
+        session.endSession();
+        // On transaction success
+		console.log("sucessfull transaction");
+        return res.status(201).json({message: "Successful Transaction"});
 	} catch (error) {
+		// If any step fails, roll back the transaction
+        await session.abortTransaction();
+        session.endSession();
+		console.log(error);
 		return res.status(500).json({ error });
 	}
+	// const blockedTimeSlot = new BlockedTimeSlot({
+	// 	_id: new mongoose.Types.ObjectId(),
+	// 	data,
+	// });
+
+	// try {
+	// 	await blockedTimeSlot.save();
+	// 	return res.status(201).json({ blockedTimeSlot });
+	// } catch (error) {
+	// 	return res.status(500).json({ error });
+	// }
 };
 
 // PATCH CONTROLLERS
