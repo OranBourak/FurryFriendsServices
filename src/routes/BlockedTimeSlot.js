@@ -1,7 +1,7 @@
-/* eslint-disable new-cap */
 const express = require("express");
 const controller = require("../controllers/BlockedTimeSlot");
 
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
 router.post("/create/:serviceProviderId", controller.createBlockedTimeSlot);

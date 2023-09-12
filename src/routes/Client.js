@@ -1,7 +1,7 @@
-/* eslint-disable new-cap */
 const express = require("express");
 const controller = require("../controllers/Client");
 
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
 router.post("/createClient", controller.createClient); // create client

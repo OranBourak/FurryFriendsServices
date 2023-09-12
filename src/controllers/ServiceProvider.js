@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 const ServiceProvider = require("../models/ServiceProvider");
 const blockedTimeSlot = require("../models/BlockedTimeSlot");
@@ -22,8 +21,7 @@ const requireAuth = async (req, res, next) => {
         req.user = await ServiceProvider.findOne({_id}).select("_id");
         next();
     } catch (error) {
-        console.log(error);
-        res.status(401).json({error: "Request is not authorized"});
+        return res.status(401).json({error: "Request is not authorized"});
     }
 };
 
@@ -155,9 +153,6 @@ const blockDate = async (req, res) => {
 
     try {
         const {dateToBlock} = req.body;
-        console.log("date to block in back: " + dateToBlock);
-        console.log("");
-
         // finding the serviceProvider by id
         const serviceProvider = await ServiceProvider.findById(serviceProviderId)
             .populate("blockedTimeSlots");
@@ -170,11 +165,9 @@ const blockDate = async (req, res) => {
 
         // filter blocked time slots on the same date to block
         const blockedTimeSlotToDelete = blockedTimeSlots.find((blockedSlot) => blockedSlot.date === dateToBlock );
-        console.log("blockedTimeSlotsToDelete " + blockedTimeSlotToDelete);
         // If there is blocked time slot in the date to block
         if (blockedTimeSlotToDelete) {
             // delete it from the blockedTimeSlot schema
-            console.log("deleting blocked time slot");
             await blockedTimeSlot.findByIdAndDelete(blockedTimeSlotToDelete._id);
             // delete it from the service provider array
             const updatedBlockedTimeSlots = blockedTimeSlots.filter(
@@ -184,11 +177,8 @@ const blockDate = async (req, res) => {
             // Update the serviceProvider document to remove the appointmentType
             serviceProvider.blockedTimeSlots = updatedBlockedTimeSlots;
             // Save in the end of the func
-        } else {
-            console.log("no blocked time slot to selete");
         }
         // Add the blocked date to the service prvider blocked dates list
-        console.log("sp blocked dates: " + serviceProvider.blockedDates);
         serviceProvider.blockedDates.push(dateToBlock);
         await serviceProvider.save();
 
@@ -230,21 +220,17 @@ const updatePassword = async (req, res) => {
     }
 };
 const getSecurityInfo = async (req, res) => {
-    console.log("In getSecurityInfo");
     const email = req.query.email; // Access email as a query parameter
     if (!email) {
-        console.log("no email found");
         return res.status(400).json({message: "No email found"});
     }
     try {
         const provider = await ServiceProvider.findOne({email});
         if (!provider) {
-            console.log("Email doesnt exist");
             return res.status(400).json({message: "Email doesn't exist"});
         }
         return res.status(200).json({securityQuestion: provider.question, securityAnswer: provider.answer, id: provider._id});
     } catch (error) {
-        console.log("catched error");
         return res.status(500).json({error: error.message});
     }
 };

@@ -1,7 +1,6 @@
-/* eslint-disable object-curly-spacing */
-/* eslint-disable new-cap */
 const express = require("express");
 const controller = require("../controllers/Appointment.js");
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
 
