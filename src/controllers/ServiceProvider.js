@@ -340,4 +340,5 @@ module.exports = {
     getAppointmentTypes,
     getAvailabilityManagmentData,
     blockDate,
+    ServiceProvider,
 };
