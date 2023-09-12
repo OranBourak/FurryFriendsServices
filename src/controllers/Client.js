@@ -9,7 +9,9 @@ const mongoose = require("mongoose");
 const Client = require("../models/Client");
 const ServiceProvider = require("../models/ServiceProvider");
 const AppointmentType = require("../models/AppointmentType");
+const Appointment = require("../models/Appointment");
 const jwt = require("jsonwebtoken");
+// const { default: Appointments } = require("../../../FurryFriendsServices_Frontend/src/components/client_components/Appointments");
 // GET CONTROLLERS
 // const readClient = async (req, res) => {
 //   const clientId = req.params.clientId;
@@ -287,7 +289,6 @@ const getProviderScheduleInfo = async (req, res) => {
 
 const readClient = async (req, res) => {
   const clientId = req.params.clientId;
-  console.log(req.params, clientId);
   try {
   const client = await Client.findOne({_id: clientId});
   console.log(client);
@@ -296,7 +297,35 @@ const readClient = async (req, res) => {
     return res.status(500).json({ message: e.message }); // response code 500 containing the error message.
   }
 };
-
+/**
+ * searches for a specific client in client database using clientId, and then populates the client's appointments field
+ * with clientId, serviceProviderId, appointmentType and date. then it populates name from service provider, name from client,
+ * name price and duration of appointment from appointmentType and returns a json object with appointments property containing objects of
+ * these appointment fields.
+ * @param {*} req 
+ * @param {*} res 
+ * @return {JSON} JSON object with appointments field that contains objects with fields of clientId, serviceProviderId, appointmentType and date.
+ */
+const getClientAppointments = async (req, res) => {
+  const clientId = req.params.clientId;
+  try {
+    const client = await Client.findOne({_id: clientId});
+    const {appointments} = await client.populate("appointments", "clientId serviceProviderId appointmentType date");
+    // for(let i in appointments){
+    //   const providerName = appointments[i].populate("serverProviderId", "name")
+    // }
+    for (const i in appointments) {
+    if (appointments.hasOwnProperty(i)) {
+    await appointments[i].populate("serviceProviderId", "name");
+    await appointments[i].populate("clientId", "name");
+    await appointments[i].populate("appointmentType", "name price duration");
+    }
+    }
+    return client? res.status(200).json({appointments: appointments}):res.status(404).json({err: 'Client not found'});
+  } catch (e) {
+    return res.status(500).json({message: e.message});
+  }
+};
 
 module.exports = {
   clientLogin,
@@ -308,4 +337,5 @@ module.exports = {
   searchProviders,
   getProviderInfo,
   getProviderScheduleInfo,
+  getClientAppointments
 };

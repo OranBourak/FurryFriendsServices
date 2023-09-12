@@ -5,6 +5,7 @@ const controller = require("../controllers/Client");
 const router = express.Router();
 
 router.post("/createClient", controller.createClient); // create client
+router.get("/get-appointments/:clientId", controller.getClientAppointments); // get all appointments for a specific client
 router.post("/login", controller.clientLogin); // login client
 router.get("/get/:clientId", controller.readClient); // get client details
 // router.get("/get/", controller.readAllClients);
