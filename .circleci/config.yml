@@ -8,9 +8,8 @@ orbs:
 
 jobs:
   cicd-job:
-    executor:
-      name: node/default
-      tag: "14"
+    docker:
+      - image: circleci/node:14-browsers
     steps:
       - checkout
       - run:
