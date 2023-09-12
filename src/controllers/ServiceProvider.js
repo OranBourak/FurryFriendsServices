@@ -1,6 +1,7 @@
 
 const mongoose = require("mongoose");
 const ServiceProvider = require("../models/ServiceProvider");
+const blockedTimeSlot = require("../models/BlockedTimeSlot");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -46,6 +47,30 @@ const readServiceProvider = async (req, res) => {
             res.status(200).json({serviceProvider}) :
             res.status(404).json({message: "ServiceProvider not found"});
     } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
+const getAvailabilityManagmentData = async (req, res) => {
+    const serviceProviderId = req.params.serviceProviderId;
+    try {
+        const serviceProvider = await ServiceProvider.findById(serviceProviderId)
+            .populate(["appointments", "blockedTimeSlots"]);
+        if (!serviceProvider) {
+            return res.status(404).json({message: "Service Provider wasn't found"});
+        }
+        // On success
+        // Initialize blocked dates
+        const blockedDates = serviceProvider.blockedDates;
+
+        // Initialize blocked time slots
+        const blockedTimeSlots = serviceProvider.blockedTimeSlots;
+
+        // Initialize appointments
+        const appointments = serviceProvider.appointments;
+
+        return res.status(200).json({blockedDates: blockedDates, blockedTimeSlots: blockedTimeSlots, appointments: appointments});
+    } catch {
         return res.status(500).json({error});
     }
 };
@@ -119,6 +144,63 @@ const loginServiceProvider = async (req, res) => {
         return res.status(200).json({token: token, name: provider.name, email: email, id: provider._id});
     } catch (error) {
         return res.status(500).json({message: error.message});
+    }
+};
+
+const blockDate = async (req, res) => {
+    const serviceProviderId = req.params.serviceProviderId;
+    // Start a new transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const {dateToBlock} = req.body;
+        console.log("date to block in back: " + dateToBlock);
+        console.log("");
+
+        // finding the serviceProvider by id
+        const serviceProvider = await ServiceProvider.findById(serviceProviderId)
+            .populate("blockedTimeSlots");
+        if (!serviceProvider) {
+            return res.status(404).json({message: "Service Provider wasn't found"});
+        }
+        // TODO: check if the service provider has meeting on the date to block
+        // (can happen that a client simultaniously scheduled an appointment when the service provider is blocking the date)
+        const blockedTimeSlots = serviceProvider.blockedTimeSlots;
+
+        // filter blocked time slots on the same date to block
+        const blockedTimeSlotToDelete = blockedTimeSlots.find((blockedSlot) => blockedSlot.date === dateToBlock );
+        console.log("blockedTimeSlotsToDelete " + blockedTimeSlotToDelete);
+        // If there is blocked time slot in the date to block
+        if (blockedTimeSlotToDelete) {
+            // delete it from the blockedTimeSlot schema
+            console.log("deleting blocked time slot");
+            await blockedTimeSlot.findByIdAndDelete(blockedTimeSlotToDelete._id);
+            // delete it from the service provider array
+            const updatedBlockedTimeSlots = blockedTimeSlots.filter(
+                (slot) => !slot._id.equals(blockedTimeSlotToDelete._id),
+            );
+
+            // Update the serviceProvider document to remove the appointmentType
+            serviceProvider.blockedTimeSlots = updatedBlockedTimeSlots;
+            // Save in the end of the func
+        } else {
+            console.log("no blocked time slot to selete");
+        }
+        // Add the blocked date to the service prvider blocked dates list
+        console.log("sp blocked dates: " + serviceProvider.blockedDates);
+        serviceProvider.blockedDates.push(dateToBlock);
+        await serviceProvider.save();
+
+        // Commit the transaction
+        await session.commitTransaction();
+        session.endSession();
+        return res.status(200).json({serviceProvider});
+    } catch (error) {
+        // If any step fails, roll back the transaction
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(500).json({error});
     }
 };
 
@@ -256,4 +338,6 @@ module.exports = {
     getAppointments,
     updatePassword,
     getAppointmentTypes,
+    getAvailabilityManagmentData,
+    blockDate,
 };
