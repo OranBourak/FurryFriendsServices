@@ -314,6 +314,7 @@ const readClient = async (req, res) => {
         return res.status(500).json({message: e.message}); // response code 500 containing the error message.
     }
 };
+
 /**
  * searches for a specific client in client database using clientId, and then populates the client's appointments field
  * with clientId, serviceProviderId, appointmentType and date. then it populates name from service provider, name from client,
@@ -340,8 +341,6 @@ const getClientAppointments = async (req, res) => {
         return res.status(500).json({message: e.message});
     }
 };
-
-
 
 const updatePassword = async (req, res) => {
     const {id, password} = req.body;
