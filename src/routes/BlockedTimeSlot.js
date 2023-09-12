@@ -4,7 +4,7 @@ const controller = require("../controllers/BlockedTimeSlot");
 
 const router = express.Router();
 
-router.post("/create/", controller.createBlockedTimeSlot);
+router.post("/create/:serviceProviderId", controller.createBlockedTimeSlot);
 router.get("/get/:blockedTimeSlotId", controller.readBlockedTimeSlot);
 router.get("/get/", controller.readAllBlockedTimeSlots);
 router.patch("/update/:blockedTimeSlotId", controller.updateBlockedTimeSlot);
