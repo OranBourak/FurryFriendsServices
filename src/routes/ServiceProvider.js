@@ -4,7 +4,7 @@ const controller = require("../controllers/ServiceProvider");
 const router = new express.Router();
 
 
-// routes
+// routes for service provider
 router.post("/create/", controller.createServiceProvider);
 router.post("/login", controller.loginServiceProvider);
 router.post("/blockDate/:serviceProviderId", controller.blockDate);
