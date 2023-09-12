@@ -47,7 +47,7 @@ const readServiceProvider = async (req, res) => {
             res.status(200).json({serviceProvider}) :
             res.status(404).json({message: "ServiceProvider not found"});
     } catch (error) {
-        return res.status(500).json({error});
+        return res.status(500).json({error: error.message});
     }
 };
 
@@ -71,7 +71,7 @@ const getAvailabilityManagmentData = async (req, res) => {
 
         return res.status(200).json({blockedDates: blockedDates, blockedTimeSlots: blockedTimeSlots, appointments: appointments});
     } catch {
-        return res.status(500).json({error});
+        return res.status(500).json({error: error.message});
     }
 };
 
@@ -93,7 +93,7 @@ const getAppointments = async (req, res) => {
         const appointments = serviceProvider.appointments;
         return res.status(200).json({appointments});
     } catch (error) {
-        return res.status(500).json({error});
+        return res.status(500).json({error: error.message});
     }
 };
 
@@ -110,7 +110,7 @@ const getAppointmentTypes = async (req, res) => {
         const appointmentTypes = serviceProvider.appointmentTypes;
         return res.status(200).json({appointmentTypes});
     } catch (error) {
-        return res.status(500).json({error});
+        return res.status(500).json({error: error.message});
     }
 };
 
@@ -119,7 +119,7 @@ const readAllServiceProviders = async (_, res) => {
         const serviceProviders = await ServiceProvider.find({});
         return res.status(200).json({serviceProviders});
     } catch (error) {
-        return res.status(500).json({error});
+        return res.status(500).json({error: error.message});
     }
 };
 
@@ -143,7 +143,7 @@ const loginServiceProvider = async (req, res) => {
         const token = createToken(provider._id);
         return res.status(200).json({token: token, name: provider.name, email: email, id: provider._id});
     } catch (error) {
-        return res.status(500).json({message: error.message});
+        return res.status(500).json({error: error.message});
     }
 };
 
@@ -200,7 +200,7 @@ const blockDate = async (req, res) => {
         // If any step fails, roll back the transaction
         await session.abortTransaction();
         session.endSession();
-        return res.status(500).json({error});
+        return res.status(500).json({error: error.message});
     }
 };
 
@@ -226,7 +226,7 @@ const updatePassword = async (req, res) => {
             res.status(404).json({message: "Service provider not found"});
         }
     } catch (error) {
-        res.status(500).json({error});
+        res.status(500).json({error: error.message});
     }
 };
 const getSecurityInfo = async (req, res) => {
@@ -245,7 +245,7 @@ const getSecurityInfo = async (req, res) => {
         return res.status(200).json({securityQuestion: provider.question, securityAnswer: provider.answer, id: provider._id});
     } catch (error) {
         console.log("catched error");
-        return res.status(500).json({message: error.message});
+        return res.status(500).json({error: error.message});
     }
 };
 
@@ -287,7 +287,7 @@ const createServiceProvider = async (req, res) => {
         return res.status(201).json({name: user.name, email: user.email, token, id: user._id});
     } catch (error) {
         // Handle any errors that occur and return an error response
-        return res.status(500).json({message: error.message});
+        return res.status(500).json({error: error.message});
     }
 };
 // PATCH CONTROLLERS
@@ -302,13 +302,13 @@ const updateServiceProvider = async (req, res) => {
                 await serviceProvider.save();
                 return res.status(201).json({serviceProvider});
             } catch (error) {
-                res.status(500).json({error});
+                res.status(500).json({error: error.message});
             }
         } else {
             res.status(404).json({message: "ServiceProvider not found"});
         }
     } catch (error) {
-        res.status(500).json({error});
+        res.status(500).json({error: error.message});
     }
 };
 
@@ -322,7 +322,7 @@ const deleteServiceProvider = async (req, res) => {
             message: serviceProviderId + "Deleted from database!",
         });
     } catch (error) {
-        return res.status(500).json({message: "ServiceProvider not found"});
+        return res.status(500).json({error: error.message});
     }
 };
 
