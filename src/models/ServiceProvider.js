@@ -11,7 +11,7 @@ const ServiceProviderSchema = new Schema(
 		email: { type: String, unique: [true, "Email already exists"], required: [true, "No email given!"] },
 		password: { type: String, required: [true, "No password given!"] },
 		country: { type: String, default: "Israel" },
-		image: { type: String, default: "../images/ServiceProviderImages/default.jpg"},
+		image: { type: String, default: null},
 		phone: {
 			type: String,
 			maxLength: 10,
