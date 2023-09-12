@@ -10,6 +10,7 @@ jobs:
   cicd-job:
     executor:
       name: node/default
+      tag: "14"
     steps:
       - checkout
       - run:

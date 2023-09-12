@@ -14,5 +14,7 @@ router.patch("/update/:clientId", controller.updateClient);
 router.get("/searchProviders/", controller.searchProviders);
 router.get("/getProviderInfo/", controller.getProviderInfo);
 router.get("/serviceProviderSchedule/:providerID", controller.getProviderScheduleInfo);
+router.patch("/password-change", controller.updatePassword);
+router.get("/pass-recovery", controller.getClientByEmail);
 
 module.exports = router;

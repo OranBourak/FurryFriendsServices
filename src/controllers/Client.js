@@ -1,6 +1,14 @@
 const Client = require("../models/Client");
 const ServiceProvider = require("../models/ServiceProvider");
 const jwt = require("jsonwebtoken");
+const validator = require("validator");
+const bcrypt = require("bcrypt");
+
+const encrypt = async (password) => {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+};
 // const { default: Appointments } = require("../../../FurryFriendsServices_Frontend/src/components/client_components/Appointments");
 // GET CONTROLLERS
 // const readClient = async (req, res) => {
@@ -333,6 +341,50 @@ const getClientAppointments = async (req, res) => {
     }
 };
 
+
+
+const updatePassword = async (req, res) => {
+    const {id, password} = req.body;
+    try {
+        const client = await Client.findOne({_id: id});
+        if (client) {
+            // Check password strength after finding the client
+            if (!validator.isStrongPassword(password, {minLength: 12})) {
+                return res.status(400).json({message: "Password not strong enough"});
+            }
+
+            try {
+                const hashedPassword = await encrypt(password);
+                client.set({password: hashedPassword});
+                await client.save();
+                return res.status(201).json({client});
+            } catch (error) {
+                res.status(500).json({error});
+            }
+        } else {
+            res.status(404).json({message: "Service client not found"});
+        }
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+};
+
+const getClientByEmail = async (req, res) => {
+    const email = req.query.email; // Access email as a query parameter
+    if (!email) {
+        return res.status(400).json({message: "No email found"});
+    }
+    try {
+        const client = await Client.findOne({email});
+        if (!client) {
+            return res.status(400).json({message: "Email doesn't exist"});
+        }
+        return res.status(200).json({securityQuestion: client.secretQuestion, securityAnswer: client.answer, id: client._id});
+    } catch (error) {
+        return res.status(500).json({error: error.message});
+    }
+};
+
 module.exports = {
     clientLogin,
     createClient,
@@ -344,4 +396,6 @@ module.exports = {
     getProviderInfo,
     getProviderScheduleInfo,
     getClientAppointments,
+    updatePassword,
+    getClientByEmail,
 };
