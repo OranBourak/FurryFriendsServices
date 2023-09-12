@@ -8,8 +8,6 @@
 const mongoose = require("mongoose");
 const Client = require("../models/Client");
 const ServiceProvider = require("../models/ServiceProvider");
-const AppointmentType = require("../models/AppointmentType");
-const Appointment = require("../models/Appointment");
 const jwt = require("jsonwebtoken");
 // const { default: Appointments } = require("../../../FurryFriendsServices_Frontend/src/components/client_components/Appointments");
 // GET CONTROLLERS
@@ -86,6 +84,11 @@ const jwt = require("jsonwebtoken");
 //   }
 // };
 
+/**
+ * Creates a web token for the client that expires after 1 day.
+ * @param {*} _id 
+ * @return {Promise} jwt token
+ */
 const createToken = (_id) => {
   return jwt.sign({_id}, process.env.SECRET, {expiresIn: '1d'});
 };
@@ -231,6 +234,12 @@ const clientLogin = async (req, res) => {
   }
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @return {JSON} object containing the response, either a JSON containing id, name and phone or an error 
+ */
 const updateClient = async (req, res) => {
   const {id, name, phone} = req.body;
   console.log(req.body);
@@ -248,7 +257,12 @@ const updateClient = async (req, res) => {
   };
 
 
-// getProviderScheduleInfo returns the schedule information of a service provider
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @return {JSON} getProviderScheduleInfo returns the schedule information of a service provider
+ */
 const getProviderScheduleInfo = async (req, res) => {
   try {
     // Extract providerID from request parameters
@@ -287,6 +301,15 @@ const getProviderScheduleInfo = async (req, res) => {
   }
 };
 
+/**
+ * queries a client with the required clientId, if found returns status code 200 with the client as json, else returns 
+ * status code 404 with "Client not found" error message. any other error will lead to status code 500 with the error that
+ * occoured.
+ * @param {} req 
+ * @param {*} res 
+ * @return {JSON} client or error
+ */
+
 const readClient = async (req, res) => {
   const clientId = req.params.clientId;
   try {
@@ -310,10 +333,7 @@ const getClientAppointments = async (req, res) => {
   const clientId = req.params.clientId;
   try {
     const client = await Client.findOne({_id: clientId});
-    const {appointments} = await client.populate("appointments", "clientId serviceProviderId appointmentType date");
-    // for(let i in appointments){
-    //   const providerName = appointments[i].populate("serverProviderId", "name")
-    // }
+    const {appointments} = await client.populate("appointments", "clientId serviceProviderId appointmentType date status duration");
     for (const i in appointments) {
     if (appointments.hasOwnProperty(i)) {
     await appointments[i].populate("serviceProviderId", "name");

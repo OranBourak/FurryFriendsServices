@@ -117,8 +117,24 @@ const createAppointment = async (req, res) => {
 // 	}
 // };
 
+const cancelAppointment = async (req, res) => {
+	const appointmentId = req.params.appointmentId;
+	// console.log(appointmentId);
+	try {
+		const appointment = await Appointment.findByIdAndUpdate(
+			appointmentId,
+			{status: "Canceled"},
+			{new: true}
+			);
+			return appointment? res.status(200).json({appointment: appointment}): res.status(404).json({msg: "Appointment not found"});
+	} catch (e) {
+		return res.status(500).json({msg: e.message});
+	}
+};
+
 module.exports = {
 	createAppointment,
+	cancelAppointment,
 	// readAppointment,
 	// readAllAppointments,
 	// updateAppointment,
