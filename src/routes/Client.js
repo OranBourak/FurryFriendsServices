@@ -1,7 +1,7 @@
-/* eslint-disable new-cap */
 const express = require("express");
 const controller = require("../controllers/Client");
 
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
 router.post("/createClient", controller.createClient); // create client
@@ -14,5 +14,7 @@ router.patch("/update/:clientId", controller.updateClient);
 router.get("/searchProviders/", controller.searchProviders);
 router.get("/getProviderInfo/", controller.getProviderInfo);
 router.get("/serviceProviderSchedule/:providerID", controller.getProviderScheduleInfo);
+router.patch("/password-change", controller.updatePassword);
+router.get("/pass-recovery", controller.getClientByEmail);
 
 module.exports = router;

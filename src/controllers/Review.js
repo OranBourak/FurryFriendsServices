@@ -1,13 +1,6 @@
-/* eslint-disable comma-dangle */
-/* eslint-disable operator-linebreak */
-/* eslint-disable object-curly-spacing */
-/* eslint-disable indent */
-/* eslint-disable no-trailing-spaces */
-/* eslint-disable no-unused-vars */
-/* eslint-disable quotes */
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const Review = require("../models/Review");
-const Client = require("../models/Client"); 
+// const Client = require("../models/Client");
 
 
 // GET CONTROLLERS
@@ -85,39 +78,39 @@ const Client = require("../models/Client");
 // };
 
 const getReviewsByProviderID = async (req, res) => {
-  const { providerID } = req.params;
+    const {providerID} = req.params;
 
-  try {
+    try {
     // Fetch reviews from your database based on providerID
-    const reviews = await Review.find({ serviceProvider_id: providerID })
-      .populate({
-        path: 'client_id',
-        select: 'name' 
-      });
+        const reviews = await Review.find({serviceProvider_id: providerID})
+            .populate({
+                path: "client_id",
+                select: "name",
+            });
 
-    // Transform reviews to include client name instead of client ID
-    const transformedReviews = reviews.map((review) => {
-      return {
-        serviceProvider_id: review.serviceProvider_id,
-        clientName: review.client_id ? review.client_id.name : 'Unknown',
-        rating: review.rating,
-        comment: review.comment
-      };
-    });
+        // Transform reviews to include client name instead of client ID
+        const transformedReviews = reviews.map((review) => {
+            return {
+                serviceProvider_id: review.serviceProvider_id,
+                clientName: review.client_id ? review.client_id.name : "Unknown",
+                rating: review.rating,
+                comment: review.comment,
+            };
+        });
 
-    res.status(200).json(transformedReviews);
-  } catch (error) {
-    console.error("There was an error fetching the reviews:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
+        res.status(200).json(transformedReviews);
+    } catch (error) {
+        console.error("There was an error fetching the reviews:", error);
+        res.status(500).json({message: "Internal Server Error"});
+    }
 };
 
 
 module.exports = {
-  // createReview,
-  // readReview,
-  // readAllReviews,
-  // updateReview,
-  // deleteReview,
-  getReviewsByProviderID,
+    // createReview,
+    // readReview,
+    // readAllReviews,
+    // updateReview,
+    // deleteReview,
+    getReviewsByProviderID,
 };
