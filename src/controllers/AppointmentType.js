@@ -94,14 +94,11 @@ const createAppointmentType = async (req, res) => {
 
 // PATCH CONTROLLERS
 const updateAppointmentType = async (req, res) => {
-    console.log("in patch appointment type");
     const appointmentTypeId = req.params.appointmentTypeId;
-    console.log(appointmentTypeId);
     try {
         // finding the appointment by id
         const appointmentType = await AppointmentType.findById(appointmentTypeId);
         if (appointmentType) {
-            console.log("app type: " + appointmentType);
             try {
                 appointmentType.set(req.body);
                 await appointmentType.save();
@@ -133,7 +130,6 @@ const deleteAppointmentType = async (req, res) => {
         const updatedAppointmentTypes = serviceProvider.appointmentTypes.filter(
             (appointmentType) => !appointmentType._id.equals(appointmentTypeToDelete._id),
         );
-        console.log(updatedAppointmentTypes);
         // Update the serviceProvider document to remove the appointmentType
         serviceProvider.appointmentTypes = updatedAppointmentTypes;
 

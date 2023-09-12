@@ -213,9 +213,7 @@ const createClient = async (req, res) => {
  */
 const clientLogin = async (req, res) => {
     const {email, password} = req.body;
-    console.log(email, password);
     try {
-        console.log(req.body);
         const client = await Client.login(email, password);
 
         // create token
@@ -234,8 +232,6 @@ const clientLogin = async (req, res) => {
  */
 const updateClient = async (req, res) => {
     const {id, name, phone} = req.body;
-    console.log(req.body);
-    console.log(name, phone);
     try {
         if (phone) {
             await Client.changePhone(id, phone);
@@ -283,7 +279,6 @@ const getProviderScheduleInfo = async (req, res) => {
 
         // Destructure the relevant fields from the provider document
         const {blockedDates, blockedTimeSlots, appointments, appointmentTypes} = provider;
-        console.log(provider);
 
         // Send the response as a JSON object
         res.status(200).json({blockedDates, blockedTimeSlots, appointments, appointmentTypes});
@@ -306,7 +301,6 @@ const readClient = async (req, res) => {
     const clientId = req.params.clientId;
     try {
         const client = await Client.findOne({_id: clientId});
-        console.log(client);
         return client? res.status(200).json({client: client}):res.status(404).json({err: "Client not found"});
     } catch (e) {
         return res.status(500).json({message: e.message}); // response code 500 containing the error message.

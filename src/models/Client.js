@@ -35,17 +35,14 @@ const ClientSchema = new Schema(
 ClientSchema.statics.createClient = async function({name, email, password, secretQuestion, answer, phone, appointments, country="Israel"}) {
     // if exists returns error
     const exists = await this.findOne({email});
-    console.log(name, email, password, secretQuestion, answer, phone, appointments);
     if (exists) {
         throw Error("Email is already in use");
     }
     // validate fields for unit testing maybe ?
 
-    console.log(email, password, secretQuestion, answer);
     // salting the password and hashing process
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    console.log(email, password);
 
     const client = await this.create({name, email, password: hashedPassword, phone, secretQuestion, answer, appointments});
 
@@ -65,7 +62,6 @@ ClientSchema.statics.login = async function login(email, password) {
     }
 
     const match = await bcrypt.compare(password, client.password);
-    console.log(password, client.password, match);
 
     // miss
     if (!match) {
@@ -85,7 +81,6 @@ ClientSchema.statics.changeName = async function changeName(id, name) {
 
 ClientSchema.statics.changePhone = async function changePhone(id, phone) {
     await this.updateOne({_id: id}, {phone: phone});
-    console.log(phone);
     return "Phone has been updated successfully.";
 };
 

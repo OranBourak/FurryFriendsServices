@@ -50,7 +50,6 @@ const createAppointment = async (req, res) => {
 
 const cancelAppointment = async (req, res) => {
     const appointmentId = req.params.appointmentId;
-    // console.log(appointmentId);
     try {
         const appointment = await Appointment.findByIdAndUpdate(
             appointmentId,
