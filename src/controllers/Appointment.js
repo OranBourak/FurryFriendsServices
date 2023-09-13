@@ -121,13 +121,15 @@ const getPast5MonthsAppointments = async (req, res) => {
         .exec()
         .then((result) => {
             // The filtered appointments with populated appointmentType will be in result[0].appointments
-            const filteredApps = result[0].appointments;
-            console.log("app 5 months ago:" + filteredApps);
-            console.log(filteredApps[0].date);
-            console.log(filteredApps[0].appointmentType[0].name);
+            const appointments = result[0].appointments;
+            console.log("app 5 months ago:" + appointments);
+            console.log(appointments[0].date);
+            console.log(appointments[0].appointmentType[0].name);
+            return res.status(200).json({appointments});
         })
         .catch((error) => {
             console.error(error);
+            return res.status(500).json({error});
         });
 };
 
