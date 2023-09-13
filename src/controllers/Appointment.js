@@ -73,7 +73,7 @@ const getPast5MonthsAppointments = async (req, res) => {
 
     // Calculate the start and end of the current month
     const fiveMonthsAgoMonthStart = new Date(fiveMonthsAgo.getFullYear(), fiveMonthsAgo.getMonth(), 1);
-    const currentMonthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    // const currentMonthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
     ServiceProvider.aggregate([
         {
             $match: {
@@ -104,7 +104,7 @@ const getPast5MonthsAppointments = async (req, res) => {
             $match: {
                 "appointments.date": {
                     $gte: fiveMonthsAgoMonthStart,
-                    $lte: currentMonthEnd,
+                    $lt: currentDate,
                 },
             },
         },
