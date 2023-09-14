@@ -8,7 +8,7 @@ const ServiceProvider = require("../src/models/ServiceProvider"); // Replace wit
 
 describe("ServiceProvider Controller", () => {
     describe("readServiceProvider", () => {
-        it("should return a 404 status and a message if serviceProvider is not found", async () => {
+        it("should return a 404 status and a error if serviceProvider is not found", async () => {
             // Mock the ServiceProvider.findById() function to return null to simulate a not found scenario.
             const findByIdStub = sinon.stub(ServiceProvider, "findById").resolves(null);
 
@@ -18,7 +18,7 @@ describe("ServiceProvider Controller", () => {
             await ServiceProviderController.readServiceProvider(req, res);
 
             expect(res.status.calledWith(404)).to.be.true;
-            expect(res.json.calledWith({message: "ServiceProvider not found"})).to.be.true;
+            expect(res.json.calledWith({error: "ServiceProvider not found"})).to.be.true;
 
             findByIdStub.restore();
         });
@@ -55,7 +55,7 @@ describe("ServiceProvider Controller", () => {
             await ServiceProviderController.readServiceProvider(req, res);
 
             expect(res.status.calledWith(500)).to.be.true;
-            expect(res.json.calledWith({error: error.message})).to.be.true;
+            expect(res.json.calledWith({error: "Internal Server Error"})).to.be.true;
 
             findByIdStub.restore();
         });
