@@ -12,9 +12,9 @@ const readBlockedTimeSlot = async (req, res) => {
         const blockedTimeSlot = await BlockedTimeSlot.findById(blockedTimeSlotId);
         return blockedTimeSlot ?
             res.status(200).json({blockedTimeSlot}) :
-            res.status(404).json({message: "BlockedTimeSlot not found"});
+            res.status(404).json({error: "BlockedTimeSlot not found"});
     } catch (error) {
-        return res.status(500).json({error});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 const readAllBlockedTimeSlots = async (_, res) => {
@@ -22,7 +22,7 @@ const readAllBlockedTimeSlots = async (_, res) => {
         const blockedTimeSlots = await BlockedTimeSlot.find({});
         return res.status(200).json({blockedTimeSlots});
     } catch (error) {
-        return res.status(500).json({error});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -37,7 +37,7 @@ const createBlockedTimeSlot = async (req, res) => {
     try {
         const serviceProvider = await ServiceProvider.findById(serviceProviderId);
         if (!serviceProvider) {
-            return res.status(404).json({message: "Service Provider was not found"});
+            return res.status(404).json({error: "Service Provider was not found"});
         }
         // create a new BlockedTimeSlot object
         const blockedTimeSlot = new BlockedTimeSlot({
@@ -60,7 +60,7 @@ const createBlockedTimeSlot = async (req, res) => {
         // If any step fails, roll back the transaction
         await session.abortTransaction();
         session.endSession();
-        return res.status(500).json({error});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -76,13 +76,13 @@ const updateBlockedTimeSlot = async (req, res) => {
                 await blockedTimeSlot.save();
                 return res.status(201).json({blockedTimeSlot});
             } catch (error) {
-                res.status(500).json({error});
+                res.status(500).json({error: "Internal Server Error"});
             }
         } else {
-            res.status(404).json({message: "BlockedTimeSlot not found"});
+            res.status(404).json({error: "BlockedTimeSlot not found"});
         }
     } catch (error) {
-        res.status(500).json({error});
+        res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -96,7 +96,7 @@ const deleteBlockedTimeSlot = async (req, res) => {
             message: blockedTimeSlotId + "Deleted from database!",
         });
     } catch (error) {
-        return res.status(500).json({message: "BlockedTimeSlot not found"});
+        return res.status(500).json({error: "BlockedTimeSlot not found"});
     }
 };
 

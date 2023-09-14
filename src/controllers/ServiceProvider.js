@@ -43,9 +43,9 @@ const readServiceProvider = async (req, res) => {
         const serviceProvider = await ServiceProvider.findById(serviceProviderId);
         return serviceProvider ?
             res.status(200).json({serviceProvider}) :
-            res.status(404).json({message: "ServiceProvider not found"});
+            res.status(404).json({error: "ServiceProvider not found"});
     } catch (error) {
-        return res.status(500).json({error: error.message});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -55,7 +55,7 @@ const getAvailabilityManagmentData = async (req, res) => {
         const serviceProvider = await ServiceProvider.findById(serviceProviderId)
             .populate(["appointments", "blockedTimeSlots"]);
         if (!serviceProvider) {
-            return res.status(404).json({message: "Service Provider wasn't found"});
+            return res.status(404).json({error: "Service Provider wasn't found"});
         }
         // On success
         // Initialize blocked dates
@@ -69,7 +69,7 @@ const getAvailabilityManagmentData = async (req, res) => {
 
         return res.status(200).json({blockedDates: blockedDates, blockedTimeSlots: blockedTimeSlots, appointments: appointments});
     } catch {
-        return res.status(500).json({error: error.message});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -124,24 +124,25 @@ const readAllServiceProviders = async (_, res) => {
 const loginServiceProvider = async (req, res) => {
     const {email, password} = req.body;
     if (!email || !password) {
-        return res.status(400).json({message: "No email or passwrod found"});
+        return res.status(400).json({error: "No email or passwrod found"});
     }
     // Check if service provider exists in DB
     try {
         const provider = await ServiceProvider.findOne({email});
         if (!provider) {
-            return res.status(400).json({message: "Email or password are incorrect"});
+            return res.status(400).json({error: "Email or password are incorrect"});
         }
         // User found, check if passwrod match
         const match = await bcrypt.compare(password, provider.password);
         if (!match) {
-            return res.status(400).json({message: "Email or password are incorrect"});
+            return res.status(400).json({error: "Email or password are incorrect"});
         }
         // password match, log in user
         const token = createToken(provider._id);
         return res.status(200).json({token: token, name: provider.name, email: email, id: provider._id});
     } catch (error) {
-        return res.status(500).json({error: error.message});
+        console.log(error);
+        return res.status(500).json({error: "Internal server error"});
     }
 };
 
@@ -157,7 +158,7 @@ const blockDate = async (req, res) => {
         const serviceProvider = await ServiceProvider.findById(serviceProviderId)
             .populate("blockedTimeSlots");
         if (!serviceProvider) {
-            return res.status(404).json({message: "Service Provider wasn't found"});
+            return res.status(404).json({error: "Service Provider wasn't found"});
         }
         // TODO: check if the service provider has meeting on the date to block
         // (can happen that a client simultaniously scheduled an appointment when the service provider is blocking the date)
@@ -190,7 +191,7 @@ const blockDate = async (req, res) => {
         // If any step fails, roll back the transaction
         await session.abortTransaction();
         session.endSession();
-        return res.status(500).json({error: error.message});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -201,7 +202,7 @@ const updatePassword = async (req, res) => {
         if (provider) {
             // Check password strength after finding the provider
             if (!validator.isStrongPassword(password, {minLength: 12})) {
-                return res.status(400).json({message: "Password not strong enough"});
+                return res.status(400).json({error: "Password not strong enough"});
             }
 
             try {
@@ -213,25 +214,25 @@ const updatePassword = async (req, res) => {
                 res.status(500).json({error});
             }
         } else {
-            res.status(404).json({message: "Service provider not found"});
+            res.status(404).json({error: "Service provider not found"});
         }
     } catch (error) {
-        res.status(500).json({error: error.message});
+        res.status(500).json({error: "Internal Server Error"});
     }
 };
 const getSecurityInfo = async (req, res) => {
     const email = req.query.email; // Access email as a query parameter
     if (!email) {
-        return res.status(400).json({message: "No email found"});
+        return res.status(400).json({error: "No email found"});
     }
     try {
         const provider = await ServiceProvider.findOne({email});
         if (!provider) {
-            return res.status(400).json({message: "Email doesn't exist"});
+            return res.status(400).json({error: "Email doesn't exist"});
         }
         return res.status(200).json({securityQuestion: provider.question, securityAnswer: provider.answer, id: provider._id});
     } catch (error) {
-        return res.status(500).json({error: error.message});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -242,19 +243,19 @@ const createServiceProvider = async (req, res) => {
     try {
         // Validate email
         if (!validator.isEmail(provider.email)) {
-            return res.status(400).json({message: "Bad email address"});
+            return res.status(400).json({error: "Bad email address"});
         }
 
         // Validate password
         if (!validator.isStrongPassword(provider.password, {minLength: 12})) {
-            return res.status(400).json({message: "Password not strong enough"});
+            return res.status(400).json({error: "Password not strong enough"});
         }
 
         // Check if the email already exists
         const existingServiceProvider = await ServiceProvider.findOne({email: provider.email});
 
         if (existingServiceProvider) {
-            return res.status(400).json({message: "Email already in use"});
+            return res.status(400).json({error: "Email already in use"});
         }
 
         // Hash the password
@@ -273,7 +274,7 @@ const createServiceProvider = async (req, res) => {
         return res.status(201).json({name: user.name, email: user.email, token, id: user._id});
     } catch (error) {
         // Handle any errors that occur and return an error response
-        return res.status(500).json({error: error.message});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 // PATCH CONTROLLERS
@@ -288,13 +289,13 @@ const updateServiceProvider = async (req, res) => {
                 await serviceProvider.save();
                 return res.status(201).json({serviceProvider});
             } catch (error) {
-                res.status(500).json({error: error.message});
+                res.status(500).json({error: "Internal Server Error"});
             }
         } else {
-            res.status(404).json({message: "ServiceProvider not found"});
+            res.status(404).json({error: "ServiceProvider not found"});
         }
     } catch (error) {
-        res.status(500).json({error: error.message});
+        res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -308,7 +309,7 @@ const deleteServiceProvider = async (req, res) => {
             message: serviceProviderId + "Deleted from database!",
         });
     } catch (error) {
-        return res.status(500).json({error: error.message});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 

@@ -32,9 +32,9 @@ const readAppointmentType = async (req, res) => {
         const appointmentType = await AppointmentType.findById(appointmentTypeId);
         return appointmentType ?
             res.status(200).json({appointment}) :
-            res.status(404).json({message: "Appointment type not found"});
+            res.status(404).json({error: "Appointment type not found"});
     } catch (error) {
-        return res.status(500).json({error});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 const readAllAppointmentTypes = async (_, res) => {
@@ -42,7 +42,7 @@ const readAllAppointmentTypes = async (_, res) => {
         const appointmentTypes = await AppointmentType.find({});
         return res.status(200).json({appointmentTypes});
     } catch (error) {
-        return res.status(500).json({error});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -71,7 +71,7 @@ const createAppointmentType = async (req, res) => {
         const serviceProvider = await ServiceProvider.findById(serviceProviderId);
 
         if (!serviceProvider) {
-            throw new Error("ServiceProvider not found");
+            return res.status(404).json({error: "Service provider not found"});
         }
 
         // Add the appointmentTypeId to the appointmentTypes array
@@ -88,7 +88,7 @@ const createAppointmentType = async (req, res) => {
         // If any step fails, roll back the transaction
         await session.abortTransaction();
         session.endSession();
-        return res.status(500).json({error});
+        return res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -104,13 +104,13 @@ const updateAppointmentType = async (req, res) => {
                 await appointmentType.save();
                 return res.status(201).json({appointmentType});
             } catch (error) {
-                res.status(500).json({error});
+                res.status(500).json({error: "Internal Server Error"});
             }
         } else {
-            res.status(404).json({message: "Appointment type not found"});
+            res.status(404).json({error: "Appointment type not found"});
         }
     } catch (error) {
-        res.status(500).json({error});
+        res.status(500).json({error: "Internal Server Error"});
     }
 };
 
@@ -147,17 +147,17 @@ const deleteAppointmentType = async (req, res) => {
 
         if (error.name === "CastError") {
             // Handle invalid ObjectId error (e.g., appointmentTypeId or serviceProviderId is invalid)
-            return res.status(400).json({message: "Invalid ID"});
-        } else if (error.message === "ServiceProvider not found") {
+            return res.status(400).json({error: "Invalid ID"});
+        } else if (error.error === "ServiceProvider not found") {
             // Handle the case where the ServiceProvider is not found
-            return res.status(404).json({message: "ServiceProvider not found"});
+            return res.status(404).json({error: "ServiceProvider not found"});
         } else if (error.name === "ValidationError") {
             // Handle Mongoose validation errors if any
-            return res.status(400).json({message: error.message});
+            return res.status(400).json({error: "Invalid input"});
         } else {
             // Handle other unexpected errors with a 500 status code
             console.error(error);
-            return res.status(500).json({message: "Internal Server Error"});
+            return res.status(500).json({error: "Internal Server Error"});
         }
     }
 };
