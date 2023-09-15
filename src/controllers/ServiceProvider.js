@@ -124,7 +124,7 @@ const readAllServiceProviders = async (_, res) => {
 const loginServiceProvider = async (req, res) => {
     const {email, password} = req.body;
     if (!email || !password) {
-        return res.status(400).json({error: "No email or passwrod found"});
+        return res.status(400).json({error: "No email or password found"});
     }
     // Check if service provider exists in DB
     try {
