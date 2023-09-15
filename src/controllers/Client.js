@@ -208,7 +208,6 @@ const createClient = async (req, res) => {
         const token = createToken(client._id);
         return res.status(200).json({id: client._id, token: token});
     } catch (e) {
-        console.log(e, " This is the error");
         return res.status(400).json({error: e.message});
     }
 };
