@@ -119,12 +119,21 @@ const getPast5MonthsAppointments = async (req, res) => {
         },
     ])
         .exec()
-        .then((result) => {
+        .then( async (result) => {
             // The filtered appointments with populated appointmentType will be in result[0].appointments
             const appointments = result[0].appointments;
-            console.log("app 5 months ago:" + appointments);
-            console.log(appointments[0].date);
-            console.log(appointments[0].appointmentType[0].name);
+            const currentDate = new Date();
+            let israeliCurrDateTime;
+            for (const appointment of appointments) {
+                israeliCurrDateTime = new Date(appointment.date);
+                israeliCurrDateTime.setMinutes(israeliCurrDateTime.getMinutes() - 180);
+                israeliCurrDateTime.setHours(israeliCurrDateTime.getHours() + appointment.duration);
+                if (israeliCurrDateTime < currentDate && appointment.status === "Upcoming") {
+                    // The appointment's date and time have passed; update status to "Completed"
+                    appointment.status = "Completed";
+                    await appointment.save();
+                }
+            }
             return res.status(200).json({appointments});
         })
         .catch((error) => {
