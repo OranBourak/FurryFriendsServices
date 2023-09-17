@@ -95,7 +95,7 @@ const getAppointments = async (req, res) => {
             israeliCurrDateTime = new Date(appointment.date);
             israeliCurrDateTime.setMinutes(israeliCurrDateTime.getMinutes() - 180);
             israeliCurrDateTime.setHours(israeliCurrDateTime.getHours() + appointment.duration);
-            if (israeliCurrDateTime < currentDate && appointment.status !== "Completed" && appointment.status !== "Canceled") {
+            if (israeliCurrDateTime < currentDate && appointment.status === "Upcoming") {
                 // The appointment's date and time have passed; update status to "Completed"
                 appointment.status = "Completed";
                 await appointment.save();
