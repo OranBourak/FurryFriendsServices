@@ -319,6 +319,8 @@ const readClient = async (req, res) => {
  * with clientId, serviceProviderId, appointmentType and date. then it populates name from service provider, name from client,
  * name price and duration of appointment from appointmentType and returns a json object with appointments property containing objects of
  * these appointment fields.
+ * updates the client's appointments, if the appointment date has passed and the appointment status is "Upcoming", the appointment status
+ * is changed to "Completed".
  * @param {*} req
  * @param {*} res
  * @return {JSON} JSON object with appointments field that contains objects with fields of clientId, serviceProviderId, appointmentType and date.
@@ -326,20 +328,34 @@ const readClient = async (req, res) => {
 const getClientAppointments = async (req, res) => {
     const clientId = req.params.clientId;
     try {
-        const client = await Client.findOne({_id: clientId});
-        const {appointments} = await client.populate("appointments", "clientId serviceProviderId appointmentType date status duration");
-        for (const i in appointments) {
-            if (appointments.hasOwnProperty(i)) {
-                await appointments[i].populate("serviceProviderId", "name");
-                await appointments[i].populate("clientId", "name");
-                await appointments[i].populate("appointmentType", "name price duration");
+        const client = await Client.findOne({_id: clientId})
+            .populate({
+                path: "appointments",
+                select: "clientId serviceProviderId appointmentType date status duration review",
+                populate: [
+                    {path: "serviceProviderId", select: "name _id"},
+                    {path: "clientId", select: "name _id"},
+                    {path: "appointmentType", select: "name price duration"},
+                ],
+            });
+        const currDate = new Date();
+        const checkDate =(appointment) => {
+            return (appointment.date <= currDate && appointment.status === "Upcoming")? true: false;
+        };
+        client.appointments.forEach((appointment) => {
+            if (checkDate(appointment)) {
+                appointment.status = "Completed";
             }
-        }
-        return client? res.status(200).json({appointments: appointments}):res.status(404).json({err: "Client not found"});
+        });
+        client.save();
+        return client ?
+            res.status(200).json({appointments: client.appointments}) :
+            res.status(404).json({err: "Client not found"});
     } catch (e) {
         return res.status(500).json({message: e.message});
     }
 };
+
 
 const updatePassword = async (req, res) => {
     const {id, password} = req.body;

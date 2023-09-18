@@ -31,6 +31,11 @@ const AppointmentSchema = new Schema(
             type: Number,
             required: [true, "No appointment duration given!"],
         },
+        review: {
+            type: Schema.Types.ObjectId,
+            required: false,
+            default: null,
+        },
     },
     {versionKey: false, timestamps: true},
 );

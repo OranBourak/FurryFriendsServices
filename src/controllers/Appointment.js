@@ -63,6 +63,16 @@ const cancelAppointment = async (req, res) => {
     }
 };
 
+const readAppointment = async (req, res) => {
+    const appointmentId = req.params.appointmentId;
+    try {
+        const appointment = await Appointment.findById(appointmentId);
+        return appointment? res.status(200).json({appointment: appointment}): res.status(404).json({msg: "Appointment not found."});
+    } catch (e) {
+        return res.status(500).json({msg: e.message});
+    }
+};
+
 const getPast5MonthsAppointments = async (req, res) => {
     console.log("In getPast5MonthsAppointments");
     const serviceProviderId = req.params.serviceProviderId;
@@ -134,6 +144,7 @@ const getPast5MonthsAppointments = async (req, res) => {
 };
 
 module.exports = {
+    readAppointment,
     createAppointment,
     cancelAppointment,
     getPast5MonthsAppointments,
