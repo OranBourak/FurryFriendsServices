@@ -89,6 +89,18 @@ const getAppointments = async (req, res) => {
         }
         // Access the populated 'appointments' field
         const appointments = serviceProvider.appointments;
+        const currentDate = new Date();
+        let israeliCurrDateTime;
+        for (const appointment of appointments) {
+            israeliCurrDateTime = new Date(appointment.date);
+            israeliCurrDateTime.setMinutes(israeliCurrDateTime.getMinutes() - 180);
+            israeliCurrDateTime.setHours(israeliCurrDateTime.getHours() + appointment.duration);
+            if (israeliCurrDateTime < currentDate && appointment.status === "Upcoming") {
+                // The appointment's date and time have passed; update status to "Completed"
+                appointment.status = "Completed";
+                await appointment.save();
+            }
+        }
         return res.status(200).json({appointments});
     } catch (error) {
         return res.status(500).json({error: error.message});
