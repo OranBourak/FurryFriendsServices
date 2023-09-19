@@ -7,9 +7,9 @@ const MONGO_PASSWORD = process.env.MONGO_PASSWORD || "";
 const MONGO_CLUSTER = process.env.MONGO_CLUSTER || "";
 const MONGO_URI = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_CLUSTER}.w4jphaj.mongodb.net/`;
 
-const SERVER_PORT = process.env.PORT ?
-    Number(process.env.PORT) :
-    process.env.SERVER_PORT;
+const SERVER_PORT = process.env.SERVER_PORT ?
+    Number(process.env.SERVER_PORT) :
+    3001;
 
 module.exports = {
     mongo: {
