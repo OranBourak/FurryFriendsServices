@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
@@ -88,12 +86,9 @@ const startServer = () => {
     });
 
     /** Run sever and  */
-    // http
-    //     .createServer(app)
-    //     .listen(config.server.port, () =>
-    //         Logger.info(`Server is running on port ${config.server.port}`),
-    //     );
-    app.listen(config.server.port, () =>
-        Logger.info(`Server is running on port ${config.server.port}`),
-    );
+    http
+        .createServer(app)
+        .listen(config.server.port, () =>
+            Logger.info(`Server is running on port ${config.server.port}`),
+        );
 };
