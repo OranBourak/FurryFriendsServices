@@ -17,8 +17,7 @@ const app = express();
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-// New for presentation
-app.use(cors({origin: "https://furryfriends.onrender.com"}));
+app.use(cors());
 
 // useNewUrlParser: true,
 // useUnifiedTopology: true,
@@ -90,7 +89,7 @@ const startServer = () => {
     /** Run sever and  */
     http
         .createServer(app)
-        .listen(config.server.port, () =>
+        .listen(config.server.port, "0.0.0.0", () =>
             Logger.info(`Server is running on port ${config.server.port}`),
         );
 };
