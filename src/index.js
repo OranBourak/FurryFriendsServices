@@ -89,7 +89,7 @@ const startServer = () => {
     /** Run sever and  */
     http
         .createServer(app)
-        .listen(config.server.port, () =>
+        .listen(config.server.port, "http://furryfriendsbackend.onrender.com", () =>
             Logger.info(`Server is running on port ${config.server.port}`),
         );
 };
